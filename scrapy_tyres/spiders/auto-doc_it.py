@@ -33,14 +33,14 @@ class AutoDocIt(scrapy.Spider):
         self.start_urls = ['http://www.auto-doc.it/pneumatici/%d-pollici?page=1' % n for n in [10,12,13,14,15,16,17,18,19,20,21,22,23,24,40,365,390,415]]
     def parse(self, response):
         for entry in response.xpath('//li[@class="ovVisLi"]'):
-            id = entry.xpath('.//div[@class="description"]//span[@style="font-size: 12px;"]/text()').extract_first()
+            id = entry.xpath('.//div[@class="description"]//span[@style="font-size: 12px;"]/text()').extract_first().replace("MPN: ","")
             brand = entry.xpath('.//img[@class="tires_item_brand"]/@src').extract_first()
             match = re.match(".+/(.+)\.png$", brand)
             if match:
                 brand = match.group(1)
             day = self.today,
-            ean = entry.xpath('.//span[@class="article_number"]/text()').extract_first()
-            model = entry.xpath('.//div[@class="name"]/a/text()').extract_first()
+            ean = entry.xpath('.//span[@class="article_number"]/text()').extract_first().replace("EAN: ","")
+            product = entry.xpath('.//div[@class="name"]/a/text()').extract_first()
             size = entry.xpath('.//div[@class="nr"]/text()').extract_first()
             price = entry.xpath('.//p[@class="actual_price"]/text()').extract_first()
             picture_url = entry.xpath('.//img[@class="tires_item_image "]/@src').extract_first()
@@ -52,9 +52,8 @@ class AutoDocIt(scrapy.Spider):
                 "ean": ean,
                 "id": id,
                 "price": price,
-                "model": model,
+                "product": product,
                 #"season": season,
-                #"size": size,
                 "source": "auto-doc.it",
                 "picture_url": picture_url,
                 "product_url": product_url

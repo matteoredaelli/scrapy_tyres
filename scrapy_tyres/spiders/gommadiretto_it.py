@@ -202,14 +202,14 @@ class GommadirettoIt(scrapy.Spider):
             brand = entry.xpath('.//div[@class="formcaddyfab"]//font/text()').extract_first()
             price1 = entry.xpath('.//div[@class="price"]//b/text()').extract_first()
             price2 = entry.xpath('.//div[@class="price"]//small/text()').extract_first()
-            description = entry.xpath('.//div[@class="formcaddyfab"]//i/b/text()').extract_first()
+            product = entry.xpath('.//div[@class="formcaddyfab"]//i/b/text()').extract_first()
             size = entry.xpath('.//div[@class="t_size"]/b/text()').extract_first().strip()
             season = entry.xpath('.//div[@class="divformcaddy"]/span/text()').extract_first()
             url = "http://www.gommadiretto.it/cgi-bin/rshop.pl?details=Ordern&typ=" + id
             mydata =  {
                 "brand": brand,
                 "product_url": url,
-                "description": description,
+                "product": product,
                 "id": id,
                 "price": price1 + price2,
                 "season": season,
