@@ -199,11 +199,12 @@ class GommadirettoIt(scrapy.Spider):
     def parse(self, response):
         for entry in response.xpath('//div[@class="artikelklotz ajax_artikelklotz ajax_suchergebnisliste_artikelklotz"]'):
             id = entry.xpath('.//a/@name').extract_first()
-            brand = entry.xpath('.//div[@class="formcaddyfab"]//font/text()').extract_first()
+            brand = entry.xpath('.//div[@class="formcaddyfab"]//b/text()').extract_first()
             price1 = entry.xpath('.//div[@class="price"]//b/text()').extract_first()
             price2 = entry.xpath('.//div[@class="price"]//small/text()').extract_first()
             product = entry.xpath('.//div[@class="formcaddyfab"]//i/b/text()').extract_first()
-            size = entry.xpath('.//div[@class="t_size"]/b/text()').extract_first().strip()
+            size = " ".join(entry.xpath('.//div[@class="t_size"]//b/text()').extract())
+            description = " ".join(entry.xpath('.//div[@class="t_size"]//a/text()').extract())
             season = entry.xpath('.//div[@class="divformcaddy"]/span/text()').extract_first()
             url = "http://www.gommadiretto.it/cgi-bin/rshop.pl?details=Ordern&typ=" + id
             mydata =  {
@@ -213,6 +214,7 @@ class GommadirettoIt(scrapy.Spider):
                 "id": id,
                 "price": price1 + price2,
                 "season": season,
+                "description": description,
                 "size": size,
                 "source": "gommadiretto.it",
                 "day": self.today
