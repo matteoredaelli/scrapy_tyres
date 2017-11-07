@@ -21,6 +21,7 @@
 
 import scrapy
 import datetime, re
+import utils
 
 sizes = [["155","65","13"],
 ["155","65","13"],
@@ -204,7 +205,8 @@ class GommadirettoIt(scrapy.Spider):
             price2 = entry.xpath('.//div[@class="price"]//small/text()').extract_first()
             product = entry.xpath('.//div[@class="formcaddyfab"]//i/b/text()').extract_first()
             size = " ".join(entry.xpath('.//div[@class="t_size"]//b/text()').extract())
-            description = " ".join(entry.xpath('.//div[@class="t_size"]//a/text()').extract())
+            ##description = " ".join(entry.xpath('.//div[@class="t_size"]//a/text()').extract())
+            description = " ".join(entry.xpath('.//div[@class="t_size"]//text()').extract())
             season = entry.xpath('.//div[@class="divformcaddy"]/span/text()').extract_first()
             url = "http://www.gommadiretto.it/cgi-bin/rshop.pl?details=Ordern&typ=" + id
             mydata =  {
@@ -214,7 +216,7 @@ class GommadirettoIt(scrapy.Spider):
                 "id": id,
                 "price": price1 + price2,
                 "season": season,
-                "description": description,
+                "description": utils.clean_text(description),
                 "size": size,
                 "source": self.name,
                 "day": self.today

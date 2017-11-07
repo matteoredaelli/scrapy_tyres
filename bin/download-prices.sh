@@ -25,4 +25,5 @@ mkdir -p $outdir
 
 for spider in $(scrapy list) ; do
     echo scrapy crawl "${spider}" -t jsonlines -o $outdir/$spider.json
+    echo python3 bin/extract_products.py $outdir/$spider.json 
 done

@@ -2,6 +2,8 @@
 import scrapy
 import datetime, re
 
+import utils
+
 class EuromasterPneumaticiItSpider(scrapy.Spider):
     name = "euromaster-pneumatici.it"
     allowed_domains = ["euromaster-pneumatici.it"]
@@ -36,13 +38,7 @@ class EuromasterPneumaticiItSpider(scrapy.Spider):
             season = match.groups()[1]
 
             url = item.xpath('./a/@href').extract_first()
-            match = re.match(".+/.+/.+/(.+)--(.+)$", url)
-            size = ""
-            description = ""
-            if match:
-                size = match.groups()[0]
-                description = match.groups()[1]
-            
+            description = " ".join(item.xpath('.//span[@class="produit-desc-ref"]//text()').extract())
             id = item.xpath('.//div[@class="produit-visu"]/img/@id').extract_first()
             match = re.match("^.+-(.+)$", id)
             if match:
@@ -55,13 +51,12 @@ class EuromasterPneumaticiItSpider(scrapy.Spider):
             yield {
                     "brand": brand,
                     "day": self.today,
-                    "description": description,
+                    "description": utils.clean_text(description),
                     "id": id,
                     "price": price,
                     "product": product,
                     "season": season,
                     "source": self.name,
-                    "size": size,
                     "url": response.urljoin(url),
                     "veycle": veycle
                     }
