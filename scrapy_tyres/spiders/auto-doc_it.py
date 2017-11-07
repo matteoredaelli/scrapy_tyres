@@ -54,7 +54,7 @@ class AutoDocIt(scrapy.Spider):
                 "price": price,
                 "product": product,
                 #"season": season,
-                "source": "auto-doc.it",
+                "source": self.name,
                 "picture_url": picture_url,
                 "product_url": product_url
             }

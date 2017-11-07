@@ -33,7 +33,7 @@ class NorautoItSpider(scrapy.Spider):
                     "product": clean_text(product),
                     "price": price,
                     "season": season,
-                    "site": self.name,
+                    "source": self.name,
                     "url": url,
                     }
         next_page = response.xpath('//a[@class="next"]/@href').extract_first()

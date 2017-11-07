@@ -216,7 +216,7 @@ class GommadirettoIt(scrapy.Spider):
                 "season": season,
                 "description": description,
                 "size": size,
-                "source": "gommadiretto.it",
+                "source": self.name,
                 "day": self.today
             }
             if self.details == 0:

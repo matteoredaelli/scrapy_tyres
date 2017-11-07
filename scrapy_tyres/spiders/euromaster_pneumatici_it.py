@@ -60,7 +60,7 @@ class EuromasterPneumaticiItSpider(scrapy.Spider):
                     "price": price,
                     "product": product,
                     "season": season,
-                    "site": self.name,
+                    "source": self.name,
                     "size": size,
                     "url": response.urljoin(url),
                     "veycle": veycle
