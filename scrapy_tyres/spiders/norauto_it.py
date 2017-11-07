@@ -2,9 +2,7 @@
 import scrapy
 import datetime, re
 
-def clean_text(text):
-    t = re.sub("[\t\n\r]", " ", text)
-    return re.sub(" +", " ", t).strip()
+import utils
 
 class NorautoItSpider(scrapy.Spider):
     name = "norauto.it"
@@ -15,7 +13,7 @@ class NorautoItSpider(scrapy.Spider):
     def parse(self, response):
         for item in response.xpath('//div[@class="ws-seg blc-all"]//div[@class="product-item-visible"]'):
             brand = item.xpath('.//div[@class="brand-logo"]//img/@alt').extract_first() 
-            product = item.xpath('.//div[@class="product-info"]//a/text()').extract_first().replace('Pneumatico ', "")
+            product = item.xpath('.//div[@class="product-info"]//a/text()').extract_first().replace('Pneumatico', "").replace(brand,"")
             url = item.xpath('.//div[@class="product-info"]//a/@href').extract_first()
             match = re.match('.*_(.+)\.html$', url)
             if match:
@@ -28,9 +26,9 @@ class NorautoItSpider(scrapy.Spider):
             yield {
                     "brand": brand,
                     "day": self.today,
-                    "description": clean_text(description),
+                    "description": utils.clean_text(description),
                     "id": id,
-                    "product": clean_text(product),
+                    "product": utils.clean_text(product),
                     "price": price,
                     "season": season,
                     "source": self.name,
