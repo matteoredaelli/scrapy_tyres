@@ -20,6 +20,8 @@
 import scrapy
 import datetime, re
 
+#import utils
+
 def clean_text(text):
     if text is None or text == "":
         return text
@@ -30,11 +32,11 @@ def clean_text(text):
 class MikonaSK(scrapy.Spider):
     name = "mikona.sk"
     allowed_domains = ["mikona.sk"]
-    start_urls = ['http://www.mikona.sk/e-shop/pneumatiky/1']
+    start_urls = ['https://www.mikona.sk/e-shop/pneumatiky/1']
     today = datetime.date.today().strftime("%Y-%m-%d")
     
     def parse(self, response):
-        for entry in response.xpath('//li[@itemtype="http://schema.org/Offer"]'):
+        for entry in response.xpath('//li[@itemtype="https://schema.org/Offer"]'):
             brand = entry.xpath('.//div[@class="box-list__producer-image"]/img/@alt').extract_first()
             product = entry.xpath('.//h2/a/text()').extract_first()
             description = entry.xpath('.//h2/a/@title').extract_first()
