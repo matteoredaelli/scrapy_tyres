@@ -58,6 +58,7 @@ class ReifentiefpreisDe(scrapy.Spider):
             'ean': mydata['EAN'],
             'url': response.url,
             'label_fuel': labels[0],
+            'source': self.name,
             'label_wet': labels[1],
             'label_noise': labels[2],
             'index': mydata['Index']
