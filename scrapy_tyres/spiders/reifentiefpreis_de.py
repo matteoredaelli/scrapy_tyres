@@ -23,7 +23,6 @@ import scrapy
 import datetime, re
 import utils
 
-
 class ReifentiefpreisDe(scrapy.Spider):
     name = "reifentiefpreis.de"
     
@@ -46,6 +45,7 @@ class ReifentiefpreisDe(scrapy.Spider):
             yield scrapy.Request(response.urljoin(url), callback=self.parse_tyre)
             
     def parse_tyre(self, response):
+        labels = response.xpath('//i[@class="icons-list biglogoicon-RLBG"]/text()').extract()
         values = response.xpath('//div[@class="grid2colh"]/div//text()').extract()
         mydata = dict(zip(values[0::2], values[1::2]))
         result = {
@@ -56,8 +56,11 @@ class ReifentiefpreisDe(scrapy.Spider):
             'product': mydata['Profil'],
             'manufacturer_number': mydata['ArtNr.'],
             'ean': mydata['EAN'],
-            
-                'index': mydata['Index']
+            'url': response.url,
+            'label_fuel': labels[0],
+            'label_wet': labels[1],
+            'label_noise': labels[2],
+            'index': mydata['Index']
             }
         if 'Zusatz' in mydata:
             result['extra'] = mydata['Zusatz']
@@ -65,6 +68,6 @@ class ReifentiefpreisDe(scrapy.Spider):
             result['extra'] = ""
         description = "%s %s %s %s %s" % (mydata['Marke'], mydata['Profil'], mydata['Größe'], mydata['Index'], result['extra'])
         result['description'] = description.strip()
-        
-        yield result
+
+        yield utils.clean_dict(result)
             

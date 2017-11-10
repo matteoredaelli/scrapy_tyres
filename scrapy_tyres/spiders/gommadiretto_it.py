@@ -232,12 +232,18 @@ class GommadirettoIt(scrapy.Spider):
 
     def parse_tyre(self, response):
         ean = response.xpath('//div[@id="pdp_tb_info_ean"]//div[@class="pdp_tabC"]/text()').extract_first()
-        #description2 = "\n".join(response.xpath('//div[@id="reifendetails_tabs-0"]//text()').extract())
+        description2 = response.xpath('//div[@class="container mainback"]//h1/text()').extract_first()
         mydata = response.meta['mydata']
         picture_url = response.xpath('//img[@id="zoom-reifenbild"]/@src').extract_first()
         mydata['ean'] = ean
         #mydata['description2'] = description
         mydata['picture_url'] = response.urljoin(picture_url)
-
-        yield mydata
+        labels = response.xpath('//a[@class="hover_underline"]//text()').extract()
+        mydata['description2'] = mydata['description']
+        mydata['description'] = description2
+        if len(labels) >=3:
+            mydata['label_fuel'] = labels[0]
+            mydata['label_wet'] = labels[1]
+            mydata['label_noise'] = labels[2]
+        yield utils.clean_dict(mydata)
             
