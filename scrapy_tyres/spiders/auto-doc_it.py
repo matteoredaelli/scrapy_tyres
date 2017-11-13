@@ -17,7 +17,7 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 # usage:
-#   scrapy crawl lafeltrinelli -t jsonlines -o data/a.json
+#   scrapy crawl auto-doc.it -t jsonlines -o data/a.json
 
 import scrapy
 import datetime, re
