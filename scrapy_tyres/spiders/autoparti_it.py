@@ -21,8 +21,13 @@
 
 import scrapy
 import datetime, re
-import utils
 
+def clean_text(text):
+    if text is None or text == "":
+        return text
+
+    t = re.sub('[\n\t\r]', '', text)
+    return re.sub('  +', ' ', t).strip()
     
 class AutopartiIt(scrapy.Spider):
     name = "autoparti.it"
@@ -35,26 +40,36 @@ class AutopartiIt(scrapy.Spider):
         self.start_urls = ['http://www.autoparti.it/pneumatici/%d-pollici?page=1' % n for n in [10,12,13,14,15,16,17,18,19,20,21,22,23,24,40,365,390,415]]
 
     def parse(self, response):
-        ts = datetime.datetime.now()
-        for entry in response.xpath('//div[@class="tires_listing"]/div[@class="item"]'):
-            model = entry.xpath('.//a[@class="prod_link"]/text()').extract_first()
-            description = entry.xpath('.//span[@class="nam_model"]/text()').extract_first()
-            ean = entry.xpath('.//div[@class="nr"]/span[1]/text()').extract_first()#.replace("EAN: ","")
-            id  = entry.xpath('.//div[@class="nr"]/span[2]/text()').extract_first()#.replace("MPN: ","")
+        for entry in response.xpath('//div[@class="item tyre_item"]'):
+            description = entry.xpath('.//a[@class="prod_link"]/text()').extract_first()
+            extra = " ".join(entry.xpath('.//div[@class="nr"]/text()').extract())
+
+            #description = entry.xpath('.//span[@class="nam_model"]/text()').extract_first()
+            ean = entry.xpath('.//div[@class="nr"]/span/text()').extract_first().replace("EAN: ","")
+            id  = entry.xpath('.//div[@class="nr"]/span/text()').extract()[1].replace("MPN: ","")
             picture_url = entry.xpath('.//img[@class="tires_item_image"]/@src').extract_first()
             product_url = entry.xpath('.//a[@class="prod_link"]/@href').extract_first()
-            price = entry.xpath('.//span[@class="new_pr"]/text()').extract_first()
+            price = entry.xpath('.//div[@class="price"]/text()').extract_first()
             season = entry.xpath('.//div[contains(@class, "tires_season")]/@class').extract_first()#.replace("tires_season ","")
-            yield utils.clean_dict({"id": id,
-                       "description": description,
-                       "ean": ean,
-                       "model": model,
-                       "picture_url": picture_url,
-                       "product_url": product_url,
-                       "price": price,
-                       "season": season,
-                       "source": self.name,
-                       "day": self.today})
+            params = entry.xpath('.//ul[@class="product_params"]/li//text()').extract()
+            values=list(
+                filter(lambda x: x!= '',
+                           map(lambda x: x.replace(":","").strip(), params)
+                           )
+                )
+            mydata = dict(zip(values[0::2], values[1::2]))
+            mydata["manufacturer_number"] = id
+            mydata["description"] = description
+            mydata["ean"] = ean
+            mydata["extra"] = extra
+            mydata["picture_url"] = picture_url
+            mydata["product_url"] = product_url
+            mydata["price"] = price
+            mydata["season"] = season
+            mydata["source"] = self.name
+            mydata['day'] = self.today
+                        
+            yield mydata
 
         next_page = response.xpath('//span[@class="next"]/a/@href').extract_first()
         if next_page != None:

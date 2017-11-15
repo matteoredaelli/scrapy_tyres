@@ -48,44 +48,6 @@ def remove_extra_text(text):
     return re.sub(' +', ' ', text).strip()
 
 
-def normalize_common_pre(df):
-    return df\
-      .filter(df.id.isNotNull()) \
-      .filter(df.id != '') \
-      .filter(df.brand.isNotNull()) \
-      .filter(df.brand != '') \
-      .filter(df.size.isNotNull()) \
-      .filter(df.size != '') \
-      .select(*(upper(col(c)).alias(c) for c in df.columns)) \
-      .withColumn("brand",       regexp_replace("brand", "[-_]", " ")) \
-      .withColumn("price",       regexp_replace("price", " €",   "")) \
-      .withColumn("price",       regexp_replace("price", ",",    ".")) 
-
-def normalize_common_post(df):
-    return df
-
-def normalize_autodocit(df):
-    return df\
-      .filter(regexp_extract('description', '(rinnovati)', 1) == '') \
-      .withColumn("id",          trim(regexp_replace("id",       "MPN: ",""))) \
-      .withColumn("ean",         trim(regexp_replace("ean",      "EAN: ",""))) \
-      .withColumn("country",     lit("IT")) \
-      .withColumn("currency",    lit("EUR")) \
-      .withColumnRenamed("season", col("stagione")) \
-      .withColumnRenamed("Pneumatici Runflat:",  "runflat") \
-      .withColumnRenamed("Pneumatici chiodati:", "chiodabile")
-
-def normalize_gommadrettoit(df):
-    return df\
-      .filter(regexp_extract('size', '(rinnovati)', 1) == '') \
-      .withColumn("id",          trim(regexp_replace("id",       "MPN: ",""))) \
-      .withColumn("ean",         trim(regexp_replace("ean",      "EAN: ",""))) \
-      .withColumn("mfs",         regexp_extract("size",   "(MFS|FSL|bordo di protezione|bordino di protezione)", 1)) \
-      .withColumn("xl",          regexp_extract("size",   " (XL|RF)\s*", 1)) \
-      .withColumn("studded",     regexp_extract("size",   " (chiodato)\s*", 1)) \
-      .withColumn("studdable",   regexp_extract("size",   " (chiodabile)\s*", 1)) \
-      .withColumn("country",     lit("IT")) \
-      .withColumn("currency",    lit("EUR")) \
 
 
 df = pd.read_json(source, lines=True)
@@ -93,6 +55,6 @@ df = pd.read_json(source, lines=True)
 
 ## extract brands
 
-for field in ["brand", "product", "description"]:
+for field in ["description"]:
     filename="data/%s" % field
     df[[field]].drop_duplicates().apply(lambda x: x.astype(str).str.upper()).sort_values(field).to_csv(filename, index=False,mode="a", header=False)
