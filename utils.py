@@ -13,7 +13,18 @@ def clean_dict(d):
         d[i] = clean_text(d[i])
     return d
 
-def extract_size(string):
+def extractIndexes(string):
+    result = {}
+    m = re.findall("(\d+)([RSTUVZ])", s)
+    if len(m) > 0:
+        result['load index']  = m[0][0]
+        result['speed index'] = m[0][1]
+    }
+    return(result)
+
+def extractSize(string):
+    ## TODO: gestire 107/110
+    ## re.findall("(\d+)/?(\d+)([RSTUVZ])", s)
     result = {}
     if string is not None:
         match = re.match(".* (\d+)[ /](\d+) Z?R?(\d+).+", string)
@@ -25,8 +36,8 @@ def extract_size(string):
             result["error"] = "Cannot find a size from '%s'" % string
     return result
 
-def extractSeason(s):
-    if bool(len(re.findall("WINTER|INVERNAL|M\+S", s))):
+def extractSeasonality(s):
+    if bool(len(re.findall("WINTER|INVERNAL|M\+S|SNOW", s))):
         return "WINTER"
     if bool(len(re.findall("SUMMER|ESTIV", s))):
         return "SUMMER"
@@ -38,7 +49,7 @@ def extractSeason(s):
 def isMFS(s):
     return bool(len(re.findall(" (MFS|FSL|PROTEZIONE) ?", s)))
 
-def isExtraLoad(string):
+def isExtraLoad(s):
     return bool(len(re.findall(" (XL|RF) ?", s)))
 
 def isRunflat(s):
@@ -67,5 +78,5 @@ def extractExtraInfos(s):
 def extractDataFromFile(infile, outfile, fields):
     df = pd.read_json(infile, lines=True)
 
-    df[fields].drop_duplicates().apply(lambda x: x.astype(str).str.upper()).sort_values(fields).to_csv(outfile, index=False,mode="a", header=False)
+    df[fields].apply(lambda x: x.astype(str).str.upper()).drop_duplicates().sort_values(fields).to_csv(outfile, index=False,mode="a", header=False)
 
