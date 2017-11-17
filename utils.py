@@ -13,37 +13,73 @@ def clean_dict(d):
         d[i] = clean_text(d[i])
     return d
 
-def extractIndexes(string):
-    result = {}
-    m = re.findall("(\d+)([RSTUVZ])", s)
-    if len(m) > 0:
-        result['load index']  = m[0][0]
-        result['speed index'] = m[0][1]
-    }
+def extractBrand(s):
+    result = {}   
+    list = s.split(" ")
+    if len(list) < 3:
+        result["error"] = "String too shoer, cannot extract a brand from description '%s'" % s
+    else:
+        brand =list[0]
+        if len(brand) < 3:
+            brand = "%s %s" % (brand, list[1])
+        result['brand'] = brand
     return(result)
 
-def extractSize(string):
+def extractProduct(s):
+    result = extractBrand(s)
+    if "brand" in result:
+        brand = result['brand']
+        regexp_product = "%s (.+) \d+[/ ]\d+ ?Z?R\d+" % brand
+        m = re.findall(regexp_product, s)
+        if len(m) > 0:
+            result["product"] = m[0]
+        else:
+            result["error"] = "cannot extract product from description '%s'" % s
+    return result
+
+def extractEan(s):
+    result = {}
+    l = re.findall(" ?(\d{13})", s)
+    if len(l) > 0:
+        result["ean"] = l[0]
+    return(result)
+
+def extractIndexes(s):
     ## TODO: gestire 107/110
     ## re.findall("(\d+)/?(\d+)([RSTUVZ])", s)
     result = {}
-    if string is not None:
-        match = re.match(".* (\d+)[ /](\d+) Z?R?(\d+).+", string)
-        if match.lastindex == 3:
-            result["width"]    = match.group(1)
-            result["series"]   = match.group(2)
-            result["diameter"] = match.group(3)
+    m = re.findall("(\d+)([RSTUVWZ])", s)
+    l = len(m)
+    if l > 0:
+        result['load_index']  = m[l-1][0]
+        result['speed_index'] = m[l-1][1]
+    return(result)
+
+def extractSize(s):
+    result = {}
+    if s is not None:
+        match = re.findall("(\d+)[ /](\d+) Z?R?(\d+)", s)
+        if len(match) > 0:
+            result["width"]    = match[0][0]
+            result["series"]   = match[0][1]
+            result["diameter"] = match[0][2]
         else:
-            result["error"] = "Cannot find a size from '%s'" % string
+            result["error"] = "Cannot extract a size from '%s'" % s
     return result
 
 def extractSeasonality(s):
+    result = {}
     if bool(len(re.findall("WINTER|INVERNAL|M\+S|SNOW", s))):
-        return "WINTER"
-    if bool(len(re.findall("SUMMER|ESTIV", s))):
-        return "SUMMER"
-    if bool(len(re.findall("SEASON|STAGIONI", s))):
-        return "ALL_SEASON"
-    return "UNKNOWN"
+        season = "WINTER"
+    elif bool(len(re.findall("SUMMER|ESTIV", s))):
+        season = "SUMMER"
+    elif bool(len(re.findall("SEASON|STAGIONI", s))):
+        season = "ALL_SEASONS"
+    else: 
+        season = ""
+        result["error"] = "Cannot find a size from '%s'" % s
+    result["seasonality"] = season
+    return(result)
     
     
 def isMFS(s):
@@ -74,6 +110,14 @@ def extractExtraInfos(s):
     if isStudded(s):
         extra["studded"] = True    
     return extra
+
+def extractAll(s):
+    result = extractProduct(s)
+    result.update(extractSize(s))
+    result.update(extractIndexes(s))
+    result.update(extractExtraInfos(s))
+    result.update(extractEan(s))
+    return(result)
 
 def extractDataFromFile(infile, outfile, fields):
     df = pd.read_json(infile, lines=True)
