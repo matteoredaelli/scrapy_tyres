@@ -68,6 +68,12 @@ ROBOTSTXT_OBEY = True
 #    'scrapy_tyres.pipelines.ScrapyTyresPipeline': 300,
 #}
 
+ITEM_PIPELINES = {
+    'scrapy_tyres.pipelines.CleanValuesPipeline': 100,
+    'scrapy_tyres.pipelines.DefaultFieldsPipeline': 300,
+    'scrapy_tyres.pipelines.UppercasePipeline': 310,
+}
+
 # Enable and configure the AutoThrottle extension (disabled by default)
 # See http://doc.scrapy.org/en/latest/topics/autothrottle.html
 #AUTOTHROTTLE_ENABLED = True

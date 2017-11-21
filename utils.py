@@ -17,7 +17,7 @@ def extractBrand(s):
     result = {}   
     list = s.split(" ")
     if len(list) < 3:
-        result["error"] = "String too shoer, cannot extract a brand from description '%s'" % s
+        result["error"] = "String too short, cannot extract a brand from description '%s'" % s
     else:
         brand =list[0]
         if len(brand) < 3:
@@ -29,7 +29,7 @@ def extractProduct(s):
     result = extractBrand(s)
     if "brand" in result:
         brand = result['brand']
-        regexp_product = "%s (.+) \d+[/ ]\d+ ?Z?R\d+" % brand
+        regexp_product = "%s (.+) \d+[/ ]\d* ?Z?R\d+" % brand
         m = re.findall(regexp_product, s)
         if len(m) > 0:
             result["product"] = m[0]
@@ -56,9 +56,11 @@ def extractIndexes(s):
     return(result)
 
 def extractSize(s):
+    ## TODO: fails with
+    ##   Hankook RW06 175 R14C 99Q
     result = {}
     if s is not None:
-        match = re.findall("(\d+)[ /](\d+) Z?R?(\d+)", s)
+        match = re.findall("(\d+)[ /](\d*) ?Z?R?(\d+)", s)
         if len(match) > 0:
             result["width"]    = match[0][0]
             result["series"]   = match[0][1]
@@ -119,8 +121,33 @@ def extractAll(s):
     result.update(extractEan(s))
     return(result)
 
-def extractDataFromFile(infile, outfile, fields):
+def json2df(infile):
     df = pd.read_json(infile, lines=True)
+    return df
 
+def extractDataFromFile(infile, outfile, fields):
+    df = json2df(infile)
     df[fields].apply(lambda x: x.astype(str).str.upper()).drop_duplicates().sort_values(fields).to_csv(outfile, index=False,mode="a", header=False)
 
+
+def jsonFieldsMapping(infile="db/json-fields-mapping.csv"):
+    df = pd.read_csv(infile)
+    fields = dict(df.values)
+    return fields
+
+def jsonRenameFields(record, fields=None):
+    if not fields:
+        fields = jsonFieldsMapping()
+    for f in record:
+        if f in fields:
+            record[fields[f]] = record[f]
+            del record[f]
+    return(record)
+    
+def jsonNormalizeValues(record):
+    ## uppercase
+    for f in ["brand", "model", "description"]:
+        if f in record:
+            record[f] = record[f].upper()
+    return(record)
+    

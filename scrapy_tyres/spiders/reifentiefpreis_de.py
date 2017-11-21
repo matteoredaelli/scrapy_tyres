@@ -20,7 +20,7 @@
 #   scrapy crawl reifentiefpreis.de -t jsonlines -o data/a.json -a width=265 -a height=70 -a diameter=16
 
 import scrapy
-import datetime, re
+import re
 import utils
 
 class ReifentiefpreisDe(scrapy.Spider):
@@ -29,7 +29,6 @@ class ReifentiefpreisDe(scrapy.Spider):
     def __init__(self, *args, **kwargs):
         super(ReifentiefpreisDe, self).__init__(*args, **kwargs)
         self.allowed_domains = ["reifentiefpreis.de"]
-        self.today = datetime.date.today().strftime("%Y-%m-%d")
         self.start_urls = ['https://www.reifentiefpreis.de']
         
     def parse(self, response):
@@ -51,14 +50,12 @@ class ReifentiefpreisDe(scrapy.Spider):
         result = {
             'brand': mydata['Marke'],
             'category': mydata['Rubrik'],
-            'day': self.today,
             'size': mydata['Größe'],
             'product': mydata['Profil'],
             'manufacturer_number': mydata['ArtNr.'],
             'ean': mydata['EAN'],
             'url': response.url,
             'label_fuel': labels[0],
-            'source': self.name,
             'label_wet': labels[1],
             'label_noise': labels[2],
             'index': mydata['Index']
@@ -70,5 +67,5 @@ class ReifentiefpreisDe(scrapy.Spider):
         description = "%s %s %s %s %s" % (mydata['Marke'], mydata['Profil'], mydata['Größe'], mydata['Index'], result['extra'])
         result['description'] = description.strip()
 
-        yield utils.clean_dict(result)
+        yield result
             
