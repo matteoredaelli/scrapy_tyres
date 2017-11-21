@@ -21,7 +21,6 @@
 
 import scrapy
 import re
-import utils
 
 class ReifentiefpreisDe(scrapy.Spider):
     name = "reifentiefpreis.de"

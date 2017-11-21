@@ -22,13 +22,6 @@
 import scrapy
 import datetime, re
 
-def clean_text(text):
-    if text is None or text == "":
-        return text
-
-    t = re.sub('[\n\t\r]', '', text)
-    return re.sub('  +', ' ', t).strip()
-    
 class AutopartiIt(scrapy.Spider):
     name = "autoparti.it"
 

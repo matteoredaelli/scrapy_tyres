@@ -21,7 +21,6 @@
 
 import scrapy
 import datetime, re
-import utils
 
 sizes = [["155","65","13"],
 ["155","65","13"],
@@ -194,7 +193,6 @@ class GommadirettoIt(scrapy.Spider):
         super(GommadirettoIt, self).__init__(*args, **kwargs)
         self.allowed_domains = ["gommadiretto.it"]
         self.details = int(details)
-        self.today = datetime.date.today().strftime("%Y-%m-%d")
         self.start_urls = ['http://www.gommadiretto.it/cgi-bin/rshop.pl?s_p=&rsmFahrzeugart=PKW&s_p_=Tutti&dsco=130&tyre_for=&search_tool=&ist_hybris_orig=&with_bootstrap_flag=1&suchen=--Mostrare+tutti+gli+pneumatici--&m_s=3&x_tyre_for=&cart_id=88618236.130.22966&sowigan=&Breite=%s&Quer=%s&Felge=%s&Speed=&Load=&Marke=&kategorie=&filter_preis_von=&filter_preis_bis=&homologation=&Ang_pro_Seite=50' % (width, height, diameter) for [width, height, diameter] in sizes]
         
     def parse(self, response):
@@ -217,9 +215,7 @@ class GommadirettoIt(scrapy.Spider):
                 "price": price1 + price2,
                 "season": season,
                 "description": utils.clean_text(description),
-                "size": size,
-                "source": self.name,
-                "day": self.today
+                "size": size
             }
             if self.details == 0:
                 yield mydata
@@ -245,5 +241,5 @@ class GommadirettoIt(scrapy.Spider):
             mydata['label_fuel'] = labels[0]
             mydata['label_wet'] = labels[1]
             mydata['label_noise'] = labels[2]
-        yield utils.clean_dict(mydata)
+        yield mydata
             

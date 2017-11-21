@@ -2,15 +2,12 @@
 import scrapy
 import datetime, re
 
-import utils
-
 class EuromasterPneumaticiItSpider(scrapy.Spider):
     name = "euromaster-pneumatici.it"
     allowed_domains = ["euromaster-pneumatici.it"]
     start_urls = [
             'https://www.euromaster-pneumatici.it/pneumatico'
             ]
-    today = datetime.date.today().strftime("%Y-%m-%d")
     
     def parse(self, response):
         for url in response.xpath('//div[@class="marque"]/a/@href').extract():
@@ -50,13 +47,11 @@ class EuromasterPneumaticiItSpider(scrapy.Spider):
             
             yield {
                     "brand": brand,
-                    "day": self.today,
                     "description": utils.clean_text(description),
                     "id": id,
                     "price": price,
                     "product": product,
                     "season": season,
-                    "source": self.name,
                     "url": response.urljoin(url),
-                    "veycle": veycle
+                    "type": veycle
                     }

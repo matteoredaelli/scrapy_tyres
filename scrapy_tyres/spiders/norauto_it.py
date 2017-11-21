@@ -2,13 +2,10 @@
 import scrapy
 import datetime, re
 
-import utils
-
 class NorautoItSpider(scrapy.Spider):
     name = "norauto.it"
     allowed_domains = ["norauto.it"]
     start_urls = ['https://www.norauto.it/0/0/0/0/0/0-0-0.html?PageNumber=1']
-    today = datetime.date.today().strftime("%Y-%m-%d")
 
     def parse(self, response):
         for item in response.xpath('//div[@class="ws-seg blc-all"]//div[@class="product-item-visible"]'):
@@ -25,13 +22,11 @@ class NorautoItSpider(scrapy.Spider):
             price = item.xpath('.//div[@class="product-price"]//span[@itemprop="price"]/text()').extract_first()
             yield {
                     "brand": brand,
-                    "day": self.today,
                     "description": utils.clean_text(description),
                     "id": id,
                     "product": utils.clean_text(product),
                     "price": price,
                     "season": season,
-                    "source": self.name,
                     "url": url,
                     }
         next_page = response.xpath('//a[@class="next"]/@href').extract_first()

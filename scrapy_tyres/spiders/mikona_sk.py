@@ -20,20 +20,10 @@
 import scrapy
 import datetime, re
 
-#import utils
-
-def clean_text(text):
-    if text is None or text == "":
-        return text
-
-    t = re.sub('[\n\t\r]', ' ', text)
-    return re.sub('  +', ' ', t).strip()
-    
 class MikonaSK(scrapy.Spider):
     name = "mikona.sk"
     allowed_domains = ["mikona.sk"]
     start_urls = ['https://www.mikona.sk/e-shop/pneumatiky/1']
-    today = datetime.date.today().strftime("%Y-%m-%d")
     
     def parse(self, response):
         for entry in response.xpath('//li[@itemtype="https://schema.org/Offer"]'):
@@ -51,8 +41,6 @@ class MikonaSK(scrapy.Spider):
                           "price": clean_text(price),
                           "product": clean_text(product),
                           "brand": brand,
-                          "day": self.today,
-                          "source": self.name,
                           "size": clean_text(size)
                           }
             yield mydata
@@ -83,6 +71,3 @@ class MikonaSK(scrapy.Spider):
         yield mydata
             
             
-
-
-
