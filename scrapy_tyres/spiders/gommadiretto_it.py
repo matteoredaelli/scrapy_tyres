@@ -209,12 +209,12 @@ class GommadirettoIt(scrapy.Spider):
             url = "http://www.gommadiretto.it/cgi-bin/rshop.pl?details=Ordern&typ=" + id
             mydata =  {
                 "brand": brand,
-                "product_url": url,
+                "url": url,
                 "product": product,
                 "id": id,
                 "price": price1 + price2,
-                "season": season,
-                "description": utils.clean_text(description),
+                "seasonality": season,
+                "description": description,
                 "size": size
             }
             if self.details == 0:

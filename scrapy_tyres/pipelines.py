@@ -31,8 +31,9 @@ class DefaultFieldsPipeline(object):
         item["source"] = spider.name
         ## currency could be understood ffrom the internet domain (.it, .de, ..) or $ in price values
         item["currency"] = "EUR"
+        
         ## if ID is not defined, it will be taken from url
-        if not id in item:
+        if "id" not in item:
             m = re.findall(".+/(.*)$", item["url"])
             if m and len(m) > 0:
                 item["id"] = m[0].replace(".html", "").replace("pneumatico-","")
@@ -40,7 +41,7 @@ class DefaultFieldsPipeline(object):
 
 class UppercasePipeline(object):
     def process_item(self, item, spider):
-        for f in ['brand', 'description', 'seasonality']:
+        for f in ['brand', 'description', 'product', 'seasonality', "vehicle"]:
             if f in item and item[f] is not None:
                 item[f] = item[f].upper()            
         return item

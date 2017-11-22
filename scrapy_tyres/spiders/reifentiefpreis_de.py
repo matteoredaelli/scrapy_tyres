@@ -48,7 +48,7 @@ class ReifentiefpreisDe(scrapy.Spider):
         mydata = dict(zip(values[0::2], values[1::2]))
         result = {
             'brand': mydata['Marke'],
-            'category': mydata['Rubrik'],
+            'vehicle': mydata['Rubrik'].split("-")[0],
             'size': mydata['Größe'],
             'product': mydata['Profil'],
             'manufacturer_number': mydata['ArtNr.'],

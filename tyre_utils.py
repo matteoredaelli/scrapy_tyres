@@ -13,7 +13,7 @@ def isExtraLoad(s):
     return bool(len(re.findall(" (XL|RF) ?", s)))
 
 def isRunflat(s):
-    return bool(len(re.findall("RUNFLAT", s)))
+    return bool(len(re.findall("RUNFLAT|R-F", s)))
 
 def isStuddable(s):
     return bool(len(re.findall("STUDDABLE|CHIODABILE", s)))
@@ -34,6 +34,17 @@ def normalizeBrand(s):
 def normalizePrice(s):
     return s.replace("€", "").replace(",", ".").strip()
 
+def normalizeSeasonality(s):
+    if bool(len(re.findall("WINTER|INVERNAL|M\+S|SNOW", s))):
+        season = "WINTER"
+    elif bool(len(re.findall("SUMMER|ESTIV", s))):
+        season = "SUMMER"
+    elif bool(len(re.findall("SEASON|STAGIONI", s))):
+        season = "ALL_SEASONS"
+    else: 
+        season = s
+    return season
+    
 ##
 ## extractXXX
 ##
@@ -52,6 +63,13 @@ def extractBrand(s):
         result['brand'] = brand
     return(result)
 
+def extractOEMark(s):
+    result = {}
+    l = re.findall(" ?(MOE|N0|N1|MO|AO|RO1|NH|MCLAREN|LRO\*)", s, flags=re.IGNORECASE)
+    if len(l) > 0:
+        result["oe_mark"] = l[0]
+    return result
+        
 def extractProduct(s):
     result = extractBrand(s)
     if "brand" in result:
@@ -87,7 +105,7 @@ def extractSize(s):
     ##   Hankook RW06 175 R14C 99Q
     result = {}
     if s is not None:
-        match = re.findall("(\d+)[ /](\d*) ?Z?R?(\d+)", s)
+        match = re.findall("(\d+)/(\d*) ?Z?R?(\d+)", s)
         if len(match) > 0:
             result["width"]    = match[0][0]
             result["series"]   = match[0][1]
@@ -96,24 +114,11 @@ def extractSize(s):
             result["error"] = "Cannot extract a size from '%s'" % s
     return result
 
-def normalizeSeasonality(s):
-    if bool(len(re.findall("WINTER|INVERNAL|M\+S|SNOW", s))):
-        season = "WINTER"
-    elif bool(len(re.findall("SUMMER|ESTIV", s))):
-        season = "SUMMER"
-    elif bool(len(re.findall("SEASON|STAGIONI", s))):
-        season = "ALL_SEASONS"
-    else: 
-        season = s
-    return season
-    
 def extractSeasonality(s):
     result = {}
     season = normalizeSeasonality(s)
-    if not s == season:
+    if s != season:
         result["seasonality"] = season
-    else:
-        result["seasonality"] = None
     return result
 
 
@@ -137,4 +142,5 @@ def extractAll(s):
     result.update(extractIndexes(s))
     result.update(extractExtraInfos(s))
     result.update(extractEan(s))
+    result.update(extractOEMark(s))
     return(result)
