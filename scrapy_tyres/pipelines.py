@@ -15,11 +15,12 @@ class MappingFieldsPipeline(object):
     df = pd.read_csv("data/source-fields-mapping.csv")
     fields = dict(df.values)
     def process_item(self, item, spider):
+        item_new = dict(item)
         for f in item:
             if f in self.fields:
-                item[self.fields[f]] = item[f]
-                del item[f]
-        return item
+                item_new[self.fields[f]] = item[f]
+                item_new.pop(f)
+        return item_new
 
 class ScrapyTyresPipeline(object):
     def process_item(self, item, spider):
@@ -50,6 +51,12 @@ class CleanValuesPipeline(object):
     def process_item(self, item, spider):
         return utils.clean_dict(item)
 
+class NormalizeCommonValuesPipeline(object):
+    def process_item(self, item, spider):
+        for f in item:
+            item[f] = tyre_utils.normalizeCommonValues(item[f])
+        return item
+    
 class NormalizeFieldsPipeline(object):
     def process_item(self, item, spider):
         if "brand" in item and item["brand"] is not None:
@@ -58,6 +65,8 @@ class NormalizeFieldsPipeline(object):
             item["price"] = tyre_utils.normalizePrice(item["price"])    
         if "seasonality" in item and item["seasonality"] is not None:
             item["seasonality"] = tyre_utils.normalizeSeasonality(item["seasonality"])
+        if "vehicle" in item and item["vehicle"] is not None:
+            item["vehicle"] = tyre_utils.normalizeVehicle(item["vehicle"])
         return item
 
 class ExtractDataFromDescriptionPipeline(object):

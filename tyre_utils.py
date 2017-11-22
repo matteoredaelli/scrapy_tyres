@@ -44,7 +44,25 @@ def normalizeSeasonality(s):
     else: 
         season = s
     return season
-    
+
+def normalizeVehicle(s):
+    if bool(len(re.findall("AUTO|PKW", s))):
+        result = "CAR"
+    else:
+        result = s
+    return result
+
+def normalizeCommonValues(s):
+    sup = s.upper()
+    if sup == "SI":
+        return True
+    if sup == "YES":
+        return True
+    if sup == "NO":
+        return False
+
+    return s
+
 ##
 ## extractXXX
 ##
