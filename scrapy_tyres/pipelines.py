@@ -29,6 +29,8 @@ class DefaultFieldsPipeline(object):
     def process_item(self, item, spider):
         item["crawled"] = datetime.utcnow()
         item["source"] = spider.name
+        ## currency could be understood ffrom the internet domain (.it, .de, ..) or $ in price values
+        item["currency"] = "EUR"
         ## if ID is not defined, it will be taken from url
         if not id in item:
             m = re.findall(".+/(.*)$", item["url"])
@@ -51,6 +53,8 @@ class NormalizeFieldsPipeline(object):
     def process_item(self, item, spider):
         if "brand" in item and item["brand"] is not None:
             item["brand"] = tyre_utils.normalizeBrand(item["brand"])
+        if "price" in item and item["price"] is not None:
+            item["price"] = tyre_utils.normalizePrice(item["price"])    
         if "seasonality" in item and item["seasonality"] is not None:
             item["seasonality"] = tyre_utils.normalizeSeasonality(item["seasonality"])
         return item

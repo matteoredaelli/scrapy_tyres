@@ -31,6 +31,9 @@ def isStudded(s):
 def normalizeBrand(s):
     return s.replace("-", " ")
 
+def normalizePrice(s):
+    return s.replace("€", "").replace(",", ".").strip()
+
 ##
 ## extractXXX
 ##
