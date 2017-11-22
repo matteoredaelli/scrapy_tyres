@@ -69,10 +69,12 @@ ROBOTSTXT_OBEY = True
 #}
 
 ITEM_PIPELINES = {
+    'scrapy_tyres.pipelines.MappingFieldsPipeline': 100,
     'scrapy_tyres.pipelines.CleanValuesPipeline': 200,
     'scrapy_tyres.pipelines.DefaultFieldsPipeline': 300,
     'scrapy_tyres.pipelines.UppercasePipeline': 400,
-    'scrapy_tyres.pipelines.MappingFieldsPipeline': 400,
+    'scrapy_tyres.pipelines.NormalizeFieldsPipeline': 500,
+    'scrapy_tyres.pipelines.ExtractDataFromDescriptionPipeline': 900,
 }
 
 # Enable and configure the AutoThrottle extension (disabled by default)

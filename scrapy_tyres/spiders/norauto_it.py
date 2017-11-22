@@ -12,21 +12,17 @@ class NorautoItSpider(scrapy.Spider):
             brand = item.xpath('.//div[@class="brand-logo"]//img/@alt').extract_first() 
             product = item.xpath('.//div[@class="product-info"]//a/text()').extract_first().replace('Pneumatico', "").replace(brand,"")
             url = item.xpath('.//div[@class="product-info"]//a/@href').extract_first()
-            match = re.match('.*_(.+)\.html$', url)
-            if match:
-                id = match.group(1)
-            else:
-                id = ""
-            description = item.xpath('.//div[@class="product-info"]//p/text()').extract_first()
+            size = item.xpath('.//div[@class="product-info"]//p/text()').extract_first()
+            description = "%s %s %s" % (brand, product, size)
             season = item.xpath('.//div[@class="product-weather"]/a/span/@class').extract_first()
             price = item.xpath('.//div[@class="product-price"]//span[@itemprop="price"]/text()').extract_first()
             yield {
                     "brand": brand,
-                    "description": utils.clean_text(description),
-                    "id": id,
-                    "product": utils.clean_text(product),
+                    "description": description,
+                    "product": product,
                     "price": price,
-                    "season": season,
+                    "size": size,
+                    "seasonality": season,
                     "url": url,
                     }
         next_page = response.xpath('//a[@class="next"]/@href').extract_first()
