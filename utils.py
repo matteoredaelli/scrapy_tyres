@@ -130,24 +130,5 @@ def extractDataFromFile(infile, outfile, fields):
     df[fields].apply(lambda x: x.astype(str).str.upper()).drop_duplicates().sort_values(fields).to_csv(outfile, index=False,mode="a", header=False)
 
 
-def jsonFieldsMapping(infile="db/json-fields-mapping.csv"):
-    df = pd.read_csv(infile)
-    fields = dict(df.values)
-    return fields
-
-def jsonRenameFields(record, fields=None):
-    if not fields:
-        fields = jsonFieldsMapping()
-    for f in record:
-        if f in fields:
-            record[fields[f]] = record[f]
-            del record[f]
-    return(record)
     
-def jsonNormalizeValues(record):
-    ## uppercase
-    for f in ["brand", "model", "description"]:
-        if f in record:
-            record[f] = record[f].upper()
-    return(record)
     

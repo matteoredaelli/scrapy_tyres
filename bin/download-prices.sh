@@ -20,7 +20,7 @@
 YEAR=$(date +%Y)
 MONTH=$(date +%m)
 DAY=$(date +%d)
-outdir="data/$YEAR/$MONTH/$DAY"
+outdir="data/sources/$YEAR/$MONTH/$DAY"
 mkdir -p $outdir
 
 scrapy list > data/sources.csv

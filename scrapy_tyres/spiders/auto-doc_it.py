@@ -37,7 +37,6 @@ class AutoDocIt(scrapy.Spider):
             match = re.match(".+/(.+)\.png$", brand)
             if match:
                 brand = match.group(1)
-            day = self.today,
             ean = entry.xpath('.//span[@class="article_number"]/text()').extract_first().replace("EAN: ","")
             product = entry.xpath('.//div[@class="name"]/a/text()').extract_first()
             size  = entry.xpath('.//div[@class="nr"]/text()').extract_first()

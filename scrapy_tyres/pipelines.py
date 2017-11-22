@@ -7,6 +7,19 @@
 
 from datetime import datetime
 import utils
+import pandas as pd
+
+
+
+class MappingFieldsPipeline(object):
+    df = pd.read_csv("data/source-fields-mapping.csv")
+    fields = dict(df.values)
+    def process_item(self, item, spider):
+        for f in item:
+            if f in self.fields:
+                item[self.fields[f]] = item[f]
+                del item[f]
+        return item
 
 class ScrapyTyresPipeline(object):
     def process_item(self, item, spider):
@@ -31,3 +44,4 @@ class UppercasePipeline(object):
 class CleanValuesPipeline(object):
     def process_item(self, item, spider):
         return utils.clean_dict(item)
+
