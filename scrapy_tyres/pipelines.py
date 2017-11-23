@@ -5,15 +5,17 @@
 # Don't forget to add your pipeline to the ITEM_PIPELINES setting
 # See: http://doc.scrapy.org/en/latest/topics/item-pipeline.html
 
-from datetime import datetime
+import datetime
 import re
 import utils
 import tyre_utils
 import pandas as pd
 
 class MappingFieldsPipeline(object):
-    df = pd.read_csv("data/source-fields-mapping.csv")
-    fields = dict(df.values)
+    def open_spider(self, spider):
+        df = pd.read_csv("data/source-fields-mapping.csv")
+        self.fields = dict(df.values)
+
     def process_item(self, item, spider):
         item_new = dict(item)
         for f in item:
@@ -28,7 +30,7 @@ class ScrapyTyresPipeline(object):
 
 class DefaultFieldsPipeline(object):
     def process_item(self, item, spider):
-        item["crawled"] = datetime.utcnow()
+        item["crawled"] = datetime.datetime.utcnow()
         item["source"] = spider.name
         ## currency could be understood ffrom the internet domain (.it, .de, ..) or $ in price values
         item["currency"] = "EUR"
@@ -77,4 +79,16 @@ class ExtractDataFromDescriptionPipeline(object):
             for f in item2:
                 if not f in item:
                     item[f] = item2[f]
+        return item
+
+class PricesWriterPipeline(object):
+    def open_spider(self, spider):
+        self.file = open('data/prices.csv', 'w+')
+
+    def close_spider(self, spider):
+        self.file.close()
+
+    def process_item(self, item, spider):
+        line = "%s,%s,%s,%s\n" % (item["crawled"].strftime("%Y%m%d"),item["source"], item["id"], item["price"])
+        self.file.write(line)
         return item
