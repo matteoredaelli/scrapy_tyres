@@ -11,6 +11,46 @@ import utils
 import tyre_utils
 import pandas as pd
 
+class StoreBrandsPipeline(object):
+    def __init__(self):
+        self.filename = "data/brands.csv"
+        
+    def open_spider(self, spider):
+        with open(self.filename, "r") as fd:
+            lines = fd.read().splitlines()
+            self.brands = set(lines)
+
+    def process_item(self, item, spider):
+        if "brand" in item and item["brand"] not in self.brands:
+            self.brands.add(item["brand"])
+            with open(self.filename, "a+") as myfile:
+                myfile.write(item["brand"] + "\n")
+        return item
+
+    def close_spider(self, spider):
+        with open(self.filename, "w") as output:
+            output.write(str(list(self.brands)))
+
+class StoreProductsPipeline(object):
+    def __init__(self):
+        self.filename = "data/products.csv"
+        
+    def open_spider(self, spider):
+        with open(self.filename, "r") as fd:
+            lines = fd.read().splitlines()
+            self.products = set(lines)
+
+    def process_item(self, item, spider):
+        if "product" in item and item["product"] not in self.products:
+            self.products.add(item["product"])
+            with open(self.filename, "a+") as myfile:
+                myfile.write(item["product"] + "\n")
+        return item
+
+    def close_spider(self, spider):
+        with open(self.filename, "w") as output:
+            output.write(str(list(self.products)))
+
 class MappingFieldsPipeline(object):
     def open_spider(self, spider):
         df = pd.read_csv("data/source-fields-mapping.csv")
@@ -30,8 +70,10 @@ class ScrapyTyresPipeline(object):
 
 class DefaultFieldsPipeline(object):
     def process_item(self, item, spider):
-        item["crawled"] = datetime.datetime.utcnow()
-        item["source"] = spider.name
+        if "crawled" not in item:
+            item["crawled"] = datetime.datetime.utcnow()
+        if "source" not in item:
+            item["source"] = spider.name
         ## currency could be understood ffrom the internet domain (.it, .de, ..) or $ in price values
         item["currency"] = "EUR"
         
@@ -83,7 +125,7 @@ class ExtractDataFromDescriptionPipeline(object):
 
 class PricesWriterPipeline(object):
     def open_spider(self, spider):
-        self.file = open('data/prices.csv', 'w+')
+        self.file = open('data/prices.csv', 'a+')
 
     def close_spider(self, spider):
         self.file.close()

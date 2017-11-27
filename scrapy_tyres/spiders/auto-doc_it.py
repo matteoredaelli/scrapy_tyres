@@ -44,7 +44,6 @@ class AutoDocIt(scrapy.Spider):
             picture_url = entry.xpath('.//img[@class="tires_item_image "]/@src').extract_first()
             url = entry.xpath('.//div[@class="image"]/a/@href').extract_first()
             details =  {
-                "brand": brand,
                 "description": "%s %s" % (product, size),
                 "ean": ean,
                 #"id": id,
@@ -53,7 +52,11 @@ class AutoDocIt(scrapy.Spider):
                 "size": size,
                 "picture_url": picture_url,
                 "url": url
-            }
+                }
+
+            if not bool(len(re.findall("IMAGE", brand))):
+                details["brand"] = brand
+
             keys = entry.xpath('.//div[@class="description"]//div[@class="box"]//ul/li/span[@class="lc"]/text()').extract()
             ## removing : at the end
             keys = map(lambda x: x.replace(":","").lower(), keys)
