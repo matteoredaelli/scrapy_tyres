@@ -45,12 +45,14 @@ class AutoDocIt(scrapy.Spider):
                         
             ean = entry.xpath('.//span[@class="article_number"]/text()').extract_first().replace("EAN: ","")
             product = entry.xpath('.//div[@class="name"]/a/text()').extract_first()
+            p = re.compile(brand, re.IGNORECASE)
+            product = re.sub(p,"", product, re.IGNORECASE)
             size  = entry.xpath('.//div[@class="nr"]/text()').extract_first()
             price = entry.xpath('.//p[@class="actual_price"]/text()').extract_first()
             picture_url = entry.xpath('.//img[@class="tires_item_image "]/@src').extract_first()
             url = entry.xpath('.//div[@class="image"]/a/@href').extract_first()
             details =  {
-                "description": "%s %s" % (product, size),
+                "description": "%s %s %s" % (brand, product, size),
                 "ean": ean,
                 #"id": id,
                 "price": price,
