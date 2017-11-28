@@ -57,9 +57,7 @@ def normalizeVehicle(s):
 
 def normalizeCommonValues(s):
     sup = s.upper()
-    if sup == "SI":
-        return True
-    if sup == "YES":
+    if sup == "SI" or sup == "YES" or sup == u"S\u00ec":
         return True
     if sup == "NO":
         return False

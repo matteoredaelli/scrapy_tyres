@@ -54,11 +54,12 @@ class ReifentiefpreisDe(scrapy.Spider):
             'manufacturer_number': mydata['ArtNr.'],
             'ean': mydata['EAN'],
             'url': response.url,
-            'label_fuel': labels[0],
-            'label_wet': labels[1],
-            'label_noise': labels[2],
             'index': mydata['Index']
             }
+        if len(labels) >= 3:
+            result['label_fuel'] = labels[0]
+            result['label_wet'] = labels[1]
+            result['label_noise'] = labels[2]
         if 'Zusatz' in mydata:
             result['extra'] = mydata['Zusatz']
         else:
