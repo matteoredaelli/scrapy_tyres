@@ -11,45 +11,33 @@ import utils
 import tyre_utils
 import pandas as pd
 
-class StoreBrandsPipeline(object):
+class StoreFieldsPipeline(object):
     def __init__(self):
-        self.filename = "data/brands.csv"
+        self.filenames = {
+            'brand': "data/brands.csv",
+            'product': "data/products.csv",
+            'size': "data/sizes.csv"
+            }
+        self.data = {}
         
     def open_spider(self, spider):
-        with open(self.filename, "r") as fd:
-            lines = fd.read().splitlines()
-            self.brands = set(lines)
+        for f in self.filenames:
+            with open(self.filenames[f], "r") as fd:
+                lines = fd.read().splitlines()
+                self.data[f] = set(lines)
 
     def process_item(self, item, spider):
-        if "brand" in item and item["brand"] not in self.brands:
-            self.brands.add(item["brand"])
-            with open(self.filename, "a+") as myfile:
-                myfile.write(item["brand"] + "\n")
+        for f in self.filenames:
+            if f in item and item[f] not in self.data[f]:
+                self.data[f].add(item[f])
+                with open(self.filenames[f], "a+") as myfile:
+                    myfile.write(item[f] + "\n")
         return item
 
     def close_spider(self, spider):
-        with open(self.filename, "w") as output:
-            output.write(str(list(self.brands)))
-
-class StoreProductsPipeline(object):
-    def __init__(self):
-        self.filename = "data/products.csv"
-        
-    def open_spider(self, spider):
-        with open(self.filename, "r") as fd:
-            lines = fd.read().splitlines()
-            self.products = set(lines)
-
-    def process_item(self, item, spider):
-        if "product" in item and item["product"] not in self.products:
-            self.products.add(item["product"])
-            with open(self.filename, "a+") as myfile:
-                myfile.write(item["product"] + "\n")
-        return item
-
-    def close_spider(self, spider):
-        with open(self.filename, "w") as output:
-            output.write(str(list(self.products)))
+        for f in self.filenames:
+            with open(self.filenames[f], "w") as output:
+                output.write(str(list(self.data[f])))
 
 class MappingFieldsPipeline(object):
     def open_spider(self, spider):
@@ -109,6 +97,8 @@ class NormalizeFieldsPipeline(object):
             item["price"] = tyre_utils.normalizePrice(item["price"])    
         if "seasonality" in item and item["seasonality"] is not None:
             item["seasonality"] = tyre_utils.normalizeSeasonality(item["seasonality"])
+        if "size" in item and item["size"] is not None:
+            item["size"] = tyre_utils.normalizeSize(item["size"])
         if "vehicle" in item and item["vehicle"] is not None:
             item["vehicle"] = tyre_utils.normalizeVehicle(item["vehicle"])
         return item

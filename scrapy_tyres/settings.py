@@ -77,8 +77,7 @@ ITEM_PIPELINES = {
     'scrapy_tyres.pipelines.NormalizeFieldsPipeline': 500,
     'scrapy_tyres.pipelines.PricesWriterPipeline': 600,
     #'scrapy_tyres.pipelines.ExtractDataFromDescriptionPipeline': 900,
-    'scrapy_tyres.pipelines.StoreBrandsPipeline': 950,
-    'scrapy_tyres.pipelines.StoreProductsPipeline': 950,
+    'scrapy_tyres.pipelines.StoreFieldsPipeline': 950,
 }
 
 # Enable and configure the AutoThrottle extension (disabled by default)

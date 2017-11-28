@@ -34,6 +34,9 @@ def normalizeBrand(s):
 def normalizePrice(s):
     return s.replace("€", "").replace(",", ".").strip()
 
+def normalizeSize(s):
+    return s.replace("rinnovati", "").replace(",", "").strip()
+
 def normalizeSeasonality(s):
     if bool(len(re.findall("WINTER|INVERNAL|M\+S|SNOW", s))):
         season = "WINTER"

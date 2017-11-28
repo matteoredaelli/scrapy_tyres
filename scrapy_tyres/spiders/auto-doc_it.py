@@ -33,10 +33,16 @@ class AutoDocIt(scrapy.Spider):
     def parse(self, response):
         for entry in response.xpath('//li[@class="ovVisLi"]'):
             #id = entry.xpath('.//div[@class="description"]//span[@style="font-size: 12px;"]/text()').extract_first().replace("MPN: ","")
+            ##brand
             brand = entry.xpath('.//img[@class="tires_item_brand"]/@src').extract_first()
             match = re.match(".+/(.+)\.png$", brand)
             if match:
                 brand = match.group(1)
+                if bool(len(re.findall("IMAGE", brand,flags=re.IGNORECASE))):
+                    m=re.match(".+/(.+)-.+-.+$", brand)
+                    if m:
+                        brand = m.group(1).replace("-", " ")
+                        
             ean = entry.xpath('.//span[@class="article_number"]/text()').extract_first().replace("EAN: ","")
             product = entry.xpath('.//div[@class="name"]/a/text()').extract_first()
             size  = entry.xpath('.//div[@class="nr"]/text()').extract_first()
@@ -48,14 +54,12 @@ class AutoDocIt(scrapy.Spider):
                 "ean": ean,
                 #"id": id,
                 "price": price,
+                "brand": brand,
                 "product": product,
                 "size": size,
                 "picture_url": picture_url,
                 "url": url
                 }
-
-            if not bool(len(re.findall("IMAGE", brand))):
-                details["brand"] = brand
 
             keys = entry.xpath('.//div[@class="description"]//div[@class="box"]//ul/li/span[@class="lc"]/text()').extract()
             ## removing : at the end
