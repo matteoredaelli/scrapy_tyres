@@ -107,10 +107,7 @@ class ExtractDataFromDescriptionPipeline(object):
     def process_item(self, item, spider):
         if  "description" in item and item["description"] is not None:
             item2 = tyre_utils.extractAll(item["description"])
-            #item = item2.update(item)
-            for f in item2:
-                if not f in item:
-                    item[f] = item2[f]
+            item = tyre_utils.mergeItems(item2)
         return item
 
 class PricesWriterPipeline(object):

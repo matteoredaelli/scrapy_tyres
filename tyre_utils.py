@@ -165,3 +165,9 @@ def extractAll(s):
     result.update(extractEan(s))
     result.update(extractOEMark(s))
     return(result)
+
+def mergeItems(item1, item2):
+    for f in item2:
+        if not f in item1:
+            item1[f] = item2[f]
+    return item1
