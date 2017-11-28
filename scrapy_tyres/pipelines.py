@@ -118,6 +118,7 @@ class PricesWriterPipeline(object):
         self.file.close()
 
     def process_item(self, item, spider):
-        line = "%s,%s,%s,%s\n" % (item["crawled"].strftime("%Y%m%d"),item["source"], item["id"], item["price"])
-        self.file.write(line)
+        if "price" in item and "id" in item:
+            line = "%s,%s,%s,%s\n" % (item["crawled"].strftime("%Y%m%d"),item["source"], item["id"], item["price"])
+            self.file.write(line)
         return item
