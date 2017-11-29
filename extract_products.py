@@ -35,10 +35,11 @@ with open(source, 'r') as f:
         item_new = tyre_utils.extractAll(item["description"])
         item = tyre_utils.mergeItems(item, item_new)
         if "ean" in item:
-            outpath = "%s/%s/%s/%s" % (out_prefix, item["brand"], item["product"], item["ean"])
+            outpath = "%s/%s/%s" % (out_prefix, item["brand"], item["ean"])
             filename = "%s/%s.json" % (outpath, item["source"])
+            tyre_utils.updateMLTrainFile(item)
         else:
-            outpath = "%s/%s/%s" % (out_prefix, item["brand"], item["product"])
+            outpath = "%s/%s" % (out_prefix, item["brand"])
             outpath = outpath.replace(" ","-")
             filename = "%s/%s.json" % (outpath, item["id"])
         outpath = outpath.replace(" ","-")
@@ -46,4 +47,3 @@ with open(source, 'r') as f:
         os.makedirs(outpath, exist_ok=True)
         with open(filename, 'w') as txtfile:
             json.dump(item, txtfile)
-        

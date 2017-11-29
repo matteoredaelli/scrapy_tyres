@@ -169,3 +169,12 @@ def mergeItems(item1, item2):
         if not f in item1:
             item1[f] = item2[f]
     return item1
+
+def updateMLTrainFile(item, filename="data/ml_product.train"):
+    if "ean" in item and "brand" in item and "description" in item:
+        s = "__label__%s_%s %s %s" % (item["brand"], item["ean"], item["ean"], item["description"])
+        if "manufacturer_number" in item:
+            s = "%s %s" % (s, item["manufacturer_number"])
+        with open(filename, "a+") as f:
+            f.write(s + "\n")
+        f.closed
