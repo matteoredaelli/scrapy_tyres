@@ -94,7 +94,7 @@ class NormalizeFieldsPipeline(object):
         if "brand" in item and item["brand"] is not None:
             item["brand"] = tyre_utils.normalizeBrand(item["brand"])
             if "product" in item:
-               item["product"] =  item["product"].replace(item["brand"],"")
+               item["product"] =  item["product"].replace(item["brand"],"").strip()
         if "price" in item and item["price"] is not None:
             item["price"] = tyre_utils.normalizePrice(item["price"])    
         if "seasonality" in item and item["seasonality"] is not None:

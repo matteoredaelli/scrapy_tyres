@@ -44,8 +44,8 @@ class MikonaSK(scrapy.Spider):
                           "size": size,
                           "url": url,
                           }
-            yield mydata
-            # yield scrapy.Request(url, callback=self.parse_tyre, meta={'mydata': mydata})
+            #yield mydata
+            yield scrapy.Request(url, callback=self.parse_tyre, meta={'mydata': mydata})
 
         next_page = response.xpath('//a[@class="paging__arrow paging__arrow--right"]/@href').extract_first()
         yield scrapy.Request(next_page, callback=self.parse)
@@ -61,14 +61,14 @@ class MikonaSK(scrapy.Spider):
         type = response.xpath('.//div[@class="in params-tab"]//dl[8]/dd/text()').extract_first()
         name = response.xpath('.//div[@class="in params-tab"]//dl[9]/dd/text()').extract_first()
         notes = response.xpath('.//div[@class="in params-tab"]//dl[10]/dd/text()').extract_first()
-        mydata['brand'] = brand
-        mydata['season'] = season
-        #mydata['id'] = id
-        mydata['name'] = name
+        #mydata['brand'] = brand
+        #mydata['season'] = season
+        mydata['manufacturer_number'] = id
+        #mydata['name'] = name
         mydata['extra'] = notes
-        mydata['picture_url'] = picture_url
-        mydata['runflat'] = runflat
-        mydata['type'] = type
+        #mydata['picture_url'] = picture_url
+        #mydata['runflat'] = runflat
+        #mydata['type'] = type
         yield mydata
             
             
