@@ -67,9 +67,9 @@ class DefaultFieldsPipeline(object):
         
         ## if ID is not defined, it will be taken from url
         if "id" not in item:
-            m = re.findall(".+/(.*)$", item["url"])
+            m = re.findall(".+/(.+)$", item["url"])
             if m and len(m) > 0:
-                item["id"] = m[0].replace(".html", "").replace("pneumatico-","")
+                item["id"] = m[0].replace(".html", "").replace("pneumatico-","").replace("/","")
         return item
 
 class UppercasePipeline(object):
@@ -93,6 +93,8 @@ class NormalizeFieldsPipeline(object):
     def process_item(self, item, spider):
         if "brand" in item and item["brand"] is not None:
             item["brand"] = tyre_utils.normalizeBrand(item["brand"])
+            if "product" in item:
+               item["product"] =  item["product"].replace(item["brand"],"")
         if "price" in item and item["price"] is not None:
             item["price"] = tyre_utils.normalizePrice(item["price"])    
         if "seasonality" in item and item["seasonality"] is not None:

@@ -36,12 +36,13 @@ class MikonaSK(scrapy.Spider):
             size = entry.xpath('.//h2/a/span/text()').extract_first()
             if size and season:
                 size = size.replace(season, "")
-            mydata = {"description": clean_text(description),
+            mydata = {"description": description,
                           "season": season,
-                          "price": clean_text(price),
-                          "product": clean_text(product),
+                          "price": price,
+                          "product": product,
                           "brand": brand,
-                          "size": clean_text(size)
+                          "size": size,
+                          "url": url,
                           }
             yield mydata
             # yield scrapy.Request(url, callback=self.parse_tyre, meta={'mydata': mydata})
@@ -61,13 +62,13 @@ class MikonaSK(scrapy.Spider):
         name = response.xpath('.//div[@class="in params-tab"]//dl[9]/dd/text()').extract_first()
         notes = response.xpath('.//div[@class="in params-tab"]//dl[10]/dd/text()').extract_first()
         mydata['brand'] = brand
-        mydata['season'] = clean_text(season)
-        mydata['id'] = clean_text(id)
-        mydata['name'] = clean_text(name)
-        mydata['notes'] = clean_text(notes)
+        mydata['season'] = season
+        #mydata['id'] = id
+        mydata['name'] = name
+        mydata['extra'] = notes
         mydata['picture_url'] = picture_url
-        mydata['runflat'] = clean_text(runflat)
-        mydata['type'] = clean_text(type)
+        mydata['runflat'] = runflat
+        mydata['type'] = type
         yield mydata
             
             
