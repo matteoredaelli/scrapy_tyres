@@ -214,7 +214,7 @@ class GommadirettoIt(scrapy.Spider):
                 "id": id,
                 "price": price1 + price2,
                 "seasonality": season,
-                "description": description,
+                "description": "%s %s %s" % (brand, product, description),
                 "size": size
             }
             if self.details == 0:
