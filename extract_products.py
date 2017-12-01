@@ -16,6 +16,7 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 import tyre_utils
+import es
 
 import json, os, re, sys
 
@@ -28,22 +29,26 @@ source = sys.argv[1]
 
 out_prefix="data/tyres"
 
+es = es.ES("fourier.it.pirelli.com")
+
 with open(source, 'r') as f:
     for line in f:
         line = line.strip()
         item = json.loads(line)
         item_new = tyre_utils.extractAll(item["description"])
         item = tyre_utils.mergeItems(item, item_new)
+
         if "ean" in item:
-            outpath = "%s/%s/%s" % (out_prefix, item["brand"], item["ean"])
-            filename = "%s/%s.json" % (outpath, item["source"])
             tyre_utils.updateMLTrainFile(item)
+            
+        if "ean" in item and "manufacturer_number" in item:
+            es.updateTyre(item)
         else:
-            outpath = "%s/%s" % (out_prefix, item["brand"])
-            outpath = outpath.replace(" ","-")
+            outpath = "%s/parked/%s" % (out_prefix, item["brand"])
             filename = "%s/%s.json" % (outpath, item["id"])
-        outpath = outpath.replace(" ","-")
-        filename = filename.replace(" ","-")       
-        os.makedirs(outpath, exist_ok=True)
-        with open(filename, 'w') as txtfile:
-            json.dump(item, txtfile)
+            outpath = outpath.replace(" ","-")
+            filename = filename.replace(" ","-").replace("'","")       
+            os.makedirs(outpath, exist_ok=True)
+            with open(filename, 'w+') as f:
+                json.dump(item, f)
+            f.closed

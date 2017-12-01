@@ -32,7 +32,7 @@ class AutoDocIt(scrapy.Spider):
         self.start_urls = ['http://www.auto-doc.it/pneumatici/%d-pollici?page=1' % n for n in [10,12,13,14,15,16,17,18,19,20,21,22,23,24,40,365,390,415]]
     def parse(self, response):
         for entry in response.xpath('//li[@class="ovVisLi"]'):
-            #id = entry.xpath('.//div[@class="description"]//span[@style="font-size: 12px;"]/text()').extract_first().replace("MPN: ","")
+            manufacturer_number = entry.xpath('.//div[@class="description"]//span[@style="font-size: 12px;"]/text()').extract_first().replace("MPN: ","")
             ##brand
             brand = entry.xpath('.//img[@class="tires_item_brand"]/@src').extract_first()
             match = re.match(".+/(.+)\.png$", brand)
@@ -54,7 +54,7 @@ class AutoDocIt(scrapy.Spider):
             details =  {
                 "description": "%s %s %s" % (brand, product, size),
                 "ean": ean,
-                #"id": id,
+                "manufacturer_number": manufacturer_number,
                 "price": price,
                 "brand": brand,
                 "product": product,
