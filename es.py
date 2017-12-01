@@ -25,6 +25,7 @@ class ES(object):
     def getItemID(self, item):
         if "brand" in item and "ean" in item and "manufacturer_number" in item:
             id = "%s-%s-%s" % (item["brand"], item["ean"], item["manufacturer_number"])
+            id = id.replace(" ","")
         else:
             id = None
             
@@ -39,11 +40,15 @@ class ES(object):
         
     def getTyre(self, item):
         id = self.getItemID(item)
+        item = None
         if id:
-            return self.es.get(index=self.TYRE_DB, doc_type="tyre", id=id)
+            try:
+               item = self.es.get(index=self.TYRE_DB, doc_type="tyre", id=id)["_source"]
+            except:
+                logging.debug('item does not exist in database')
         else:
-            logging.warning('Cannot save tyre: missing brand or ean or manufacturer_number')
-            return None
+            logging.warning('Cannot get tyre: missing brand or ean or manufacturer_number')
+        return item
         
     def updateTyre(self, item):
         item1 = self.getTyre(item)
@@ -51,4 +56,4 @@ class ES(object):
             item = tyre_utils.mergeItems(item1, item)
         else:
             logging.debug('adding new tyre')
-        saveTyre(self, item)
+        return self.saveTyre(item)
