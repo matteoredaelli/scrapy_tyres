@@ -91,11 +91,15 @@ class NormalizeCommonValuesPipeline(object):
     
 class NormalizeFieldsPipeline(object):
     def process_item(self, item, spider):
-        for f in item.keys:
-            function = "normalize_%s" % f
-            if hasattr(tyre_utils, function) and item[f] is not None:
-                function = "tyre_utils.%s(item)" % function
-                item = eval(function)
+        if item:
+            keys = item.keys()
+            # brand must be normalized before product
+            keys = list(keys).sort()
+            for f in item.keys():
+                function = "normalize_%s" % f
+                if hasattr(tyre_utils, function) and item[f] is not None:
+                    function = "tyre_utils.%s(item)" % function
+                    item = eval(function)
         return item
 
 class ExtractDataFromDescriptionPipeline(object):

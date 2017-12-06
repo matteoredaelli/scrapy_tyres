@@ -11,3 +11,11 @@ bordo di protezione,mfs
 pneumatici runflat,runflat
 pneumatici chiodati,studded
 product_url,url
+kokomerkintä,size
+kantavuus,load_index
+nopeusluokka,speed_index
+ipcode,manufacturer_number
+paino,weight
+taloudellisuus,label_fuel
+märkäpito,label_wet
+vierintämelu,label_noise

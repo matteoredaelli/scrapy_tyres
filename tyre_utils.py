@@ -40,11 +40,16 @@ def normalizeCommonValues(s):
 ##  outout item
 
 def normalize_brand(item):
-    s=item["brand"]
-    s.replace("-", " ")
-    item["brand"] = s
+    if "brand" in item:
+        s=item["brand"]
+        s.replace("-", " ")
+        item["brand"] = s
     return item
 
+def normalize_load_index(item):
+    item["load_index"] = re.sub("\(.*\)","",item["load_index"]).strip()
+
+    return item
 def normalize_price(item):
     s=item["price"]
     if bool(len(re.findall("€", s))):
@@ -54,6 +59,11 @@ def normalize_price(item):
     
     s = s.replace("$", "").replace("€", "").replace(",", ".").strip()
     item["price"] = s
+    return item
+
+def normalize_product(item):
+    if "brand" in item:
+        item["product"] = item["product"].replace(item["brand"],"").strip()
     return item
 
 def normalize_size(item):

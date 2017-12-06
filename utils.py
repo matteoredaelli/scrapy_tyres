@@ -22,6 +22,12 @@ def extractDataFromFile(infile, outfile, fields):
     df = json2df(infile)
     df[fields].apply(lambda x: x.astype(str).str.upper()).drop_duplicates().sort_values(fields).to_csv(outfile, index=False,mode="a", header=False)
 
-
+def list2dict(list, sep=":"):
+    result = {}
+    for e in list:
+        m = e.split(sep)
+        if len(m) == 2:
+            result[m[0].strip()] = m[1].strip()
+    return result
     
     
