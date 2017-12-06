@@ -96,6 +96,11 @@ class NormalizeFieldsPipeline(object):
             # brand must be normalized before product
             keys = list(keys).sort()
             for f in item.keys():
+                f_new = f.lower().replace(":","").strip()
+                if f != f_new:
+                    item[f_new]=item[f]
+                    del item[f]
+                    f = f_new
                 function = "normalize_%s" % f
                 if hasattr(tyre_utils, function) and item[f] is not None:
                     function = "tyre_utils.%s(item)" % function
