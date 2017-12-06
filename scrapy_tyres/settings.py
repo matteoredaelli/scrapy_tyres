@@ -13,7 +13,8 @@ BOT_NAME = 'scrapy_tyres'
 
 SPIDER_MODULES = ['scrapy_tyres.spiders']
 NEWSPIDER_MODULE = 'scrapy_tyres.spiders'
-
+#utf8 in json
+FEED_EXPORT_ENCODING = 'utf-8'
 
 # Crawl responsibly by identifying yourself (and your website) on the user-agent
 USER_AGENT = 'Mozilla/5.0 (X11; Linux i686 on x86_64; rv:10.0) Gecko/20100101 Firefox/10.0'

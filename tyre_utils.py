@@ -31,8 +31,7 @@ def normalizeCommonValues(s):
     sup = s.upper()
     if sup == "Sì" or \
             sup == "SI" or \
-            sup == "YES" or \
-            sup == u"S\\u00ec":
+            sup == "YES":
         return True
     if sup == "NO":
         return False
