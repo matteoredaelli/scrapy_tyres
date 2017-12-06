@@ -10,10 +10,13 @@ def isMFS(s):
     return bool(len(re.findall(" (MFS|FSL|PROTEZIONE) ?", s)))
 
 def isExtraLoad(s):
-    return bool(len(re.findall(" (XL|RF) ?", s)))
+    return bool(len(re.findall(" XL ?", s)))
+
+def isReinforced(s):
+    return bool(len(re.findall(" RF ?", s)))
 
 def isRunflat(s):
-    return bool(len(re.findall("RUNFLAT|R-F", s)))
+    return bool(len(re.findall("RUNFLAT|R-F|SSR", s)))
 
 def isStuddable(s):
     return bool(len(re.findall("STUDDABLE|CHIODABILE", s)))
@@ -26,7 +29,10 @@ def normalizeCommonValues(s):
     if s is None:
         return s
     sup = s.upper()
-    if sup == "SI" or sup == "YES" or sup == u"S\u00ec":
+    if sup == "Sì" or \
+            sup == "SI" or \
+            sup == "YES" or \
+            sup == u"S\\u00ec":
         return True
     if sup == "NO":
         return False
@@ -116,7 +122,7 @@ def extractBrand(s):
 
 def extractOEMark(s):
     result = {}
-    l = re.findall(" ?(MOE|N0|N1|MO|AO|RO1|NH|MCLAREN|LRO\*)", s, flags=re.IGNORECASE)
+    l = re.findall(" ?(MOE|N0|N1|MO|AO|RO1|NH|MCLAREN|LRO|\*)", s, flags=re.IGNORECASE)
     if len(l) > 0:
         result["oe_mark"] = l[0]
     return result
@@ -180,8 +186,10 @@ def extractExtraInfos(s):
         extra["xl"] = True
     if isMFS(s):
         extra["mfs"] = True
+    if isReinforced(s):
+        extra["reinforced"] = True
     if isRunflat(s):
-        extra["runflat"] = True
+        extra["runflat"] = True   
     if isStuddable(s):
         extra["studdable"] = True
     if isStudded(s):
