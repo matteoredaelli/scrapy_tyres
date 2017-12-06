@@ -22,39 +22,6 @@ def isStudded(s):
     return bool(len(re.findall("STUDDED|CHIODATO", s)))
 
 
-##
-## normalizeXXX
-##
-##  input: string
-##  outout string
-
-def normalizeBrand(s):
-    return s.replace("-", " ")
-
-def normalizePrice(s):
-    return s.replace("€", "").replace(",", ".").strip()
-
-def normalizeSize(s):
-    return s.replace("rinnovati", "").replace(",", "").strip()
-
-def normalizeSeasonality(s):
-    if bool(len(re.findall("WINTER|INVERNAL|M\+S|SNOW", s))):
-        season = "WINTER"
-    elif bool(len(re.findall("SUMMER|ESTIV", s))):
-        season = "SUMMER"
-    elif bool(len(re.findall("SEASON|STAGIONI", s))):
-        season = "ALL_SEASONS"
-    else: 
-        season = s
-    return season
-
-def normalizeVehicle(s):
-    if bool(len(re.findall("AUTO|PKW", s))):
-        result = "CAR"
-    else:
-        result = s
-    return result
-
 def normalizeCommonValues(s):
     if s is None:
         return s
@@ -67,10 +34,62 @@ def normalizeCommonValues(s):
     return s
 
 ##
+## normalizeXXX
+##
+##  input: item
+##  outout item
+
+def normalize_brand(item):
+    s=item["brand"]
+    s.replace("-", " ")
+    item["brand"] = s
+    return item
+
+def normalize_price(item):
+    s=item["price"]
+    if bool(len(re.findall("€", s))):
+        item["currency"] = "EUR"
+    elif bool(len(re.findall("$", s))):
+        item["currency"] = "USD"
+    
+    s = s.replace("$", "").replace("€", "").replace(",", ".").strip()
+    item["price"] = s
+    return item
+
+def normalize_size(item):
+    s = item["size"]
+    s = s.replace("rinnovati", "").replace(",", "").strip()
+    item["size"] = s
+    return item
+
+def normalize_seasonality(item):
+    s = item["seasonality"]
+    if bool(len(re.findall("WINTER|INVERNAL|M\+S|SNOW", s))):
+        season = "WINTER"
+    elif bool(len(re.findall("SUMMER|ESTIV", s))):
+        season = "SUMMER"
+    elif bool(len(re.findall("SEASON|STAGIONI", s))):
+        season = "ALL_SEASONS"
+    else: 
+        season = s
+    item["seasonality"] = season
+    return item
+
+def normalize_vehicle(s):
+    s = item["vehicle"]
+    if bool(len(re.findall("AUTO|PKW", s))):
+        result = "CAR"
+    else:
+        result = s
+    item["vehicle"] = result
+    return item
+
+
+##
 ## extractXXX
 ##
 ##  input: string
-##  outout dict, to be merged with item
+##  output: dict, to be merged with item
 
 def extractBrand(s):
     result = {}   
@@ -78,10 +97,11 @@ def extractBrand(s):
     if len(list) < 3:
         result["error"] = "String too short, cannot extract a brand from description '%s'" % s
     else:
-        brand =normalizeBrand(list[0])
+        brand = list[0]
         if len(brand) < 3:
             brand = "%s %s" % (brand, list[1])
         result['brand'] = brand
+        result = normalize_brand(result)
     return(result)
 
 def extractOEMark(s):
@@ -95,7 +115,8 @@ def extractProduct(s):
     result = extractBrand(s)
     if "brand" in result:
         brand = result['brand']
-        regexp_product = "%s (.+) \d+[/ ]\d* ?Z?R\d+" % brand
+        s = s.replace(brand,"").strip()
+        regexp_product = "(.+) \d+[/ ]\d* ?Z?R\d+"
         m = re.findall(regexp_product, s)
         if len(m) > 0:
             result["product"] = m[0]
@@ -157,7 +178,8 @@ def extractExtraInfos(s):
         extra["studded"] = True    
     return extra
 
-def extractAll(s):
+def extractAll(item):
+    s = item["description"]
     result = extractProduct(s)
     result.update(extractSize(s))
     result.update(extractIndexes(s))
@@ -166,10 +188,25 @@ def extractAll(s):
     result.update(extractOEMark(s))
     return(result)
 
-def mergeItems(item1, item2):
+def mergeItems(item1, item2, append=False):
+    ## TODO: append=True dow not work
     for f in item2:
         if not f in item1:
             item1[f] = item2[f]
+        elif append and f not in [ "brand", "ean", "manufacturer_number", "product"]:
+            ## multivalues are allowed
+            v1 = item1[f]
+            if not isinstance(v1, list):
+                v1 = [v1]
+            v2 = item2[f]
+            if not isinstance(v2, list):
+                v2 = [v2]
+            ## only unique values
+            v = list(set(v1 + v2))
+            ## value will be a string if there is only 1 element in the lust
+            if len(v) == 1:
+                v = v[0]
+            item1[f] = v
     return item1
 
 def updateMLTrainFile(item, filename="data/ml_product.train"):

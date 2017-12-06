@@ -91,18 +91,11 @@ class NormalizeCommonValuesPipeline(object):
     
 class NormalizeFieldsPipeline(object):
     def process_item(self, item, spider):
-        if "brand" in item and item["brand"] is not None:
-            item["brand"] = tyre_utils.normalizeBrand(item["brand"])
-            if "product" in item:
-               item["product"] =  item["product"].replace(item["brand"],"").strip()
-        if "price" in item and item["price"] is not None:
-            item["price"] = tyre_utils.normalizePrice(item["price"])    
-        if "seasonality" in item and item["seasonality"] is not None:
-            item["seasonality"] = tyre_utils.normalizeSeasonality(item["seasonality"])
-        if "size" in item and item["size"] is not None:
-            item["size"] = tyre_utils.normalizeSize(item["size"])
-        if "vehicle" in item and item["vehicle"] is not None:
-            item["vehicle"] = tyre_utils.normalizeVehicle(item["vehicle"])
+        for f in item.keys:
+            function = "normalize_%s" % f
+            if hasattr(tyre_utils, function) and item[f] is not None:
+                function = "tyre_utils.%s(item)" % function
+                item = eval(function)
         return item
 
 class ExtractDataFromDescriptionPipeline(object):

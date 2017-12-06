@@ -35,11 +35,11 @@ with open(source, 'r') as f:
     for line in f:
         line = line.strip()
         item = json.loads(line)
-        item_new = tyre_utils.extractAll(item["description"])
+        item_new = tyre_utils.extractAll(item)
         item = tyre_utils.mergeItems(item, item_new)
 
-        if "ean" in item:
-            tyre_utils.updateMLTrainFile(item)
+        ##if "ean" in item:
+        ##  tyre_utils.updateMLTrainFile(item)
             
         if "ean" in item and "manufacturer_number" in item:
             es.updateTyre(item)
