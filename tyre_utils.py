@@ -12,11 +12,17 @@ def isMFS(s):
 def isExtraLoad(s):
     return bool(len(re.findall(" XL ?", s)))
 
+def isNCS(s):
+    return bool(len(re.findall("SIL|ACO|ACOUSTIC|NST|SOUND|SILENT", s)))
+
 def isReinforced(s):
     return bool(len(re.findall(" RF ?", s)))
 
 def isRunflat(s):
-    return bool(len(re.findall("RUNFLAT|R-F|SSR", s)))
+    return bool(len(re.findall("RUNFLAT|R-F|RFT|SSR|DSST|ROF|EMT|(RUN FLAT)", s)))
+
+def isSelfSeal(s):
+    return bool(len(re.findall("SEAL|CS", s)))
 
 def isStuddable(s):
     return bool(len(re.findall("STUDDABLE|CHIODABILE", s)))
@@ -190,10 +196,14 @@ def extractExtraInfos(s):
         extra["xl"] = True
     if isMFS(s):
         extra["mfs"] = True
+    if isNCS(s):
+        extra["ncs"] = True
     if isReinforced(s):
         extra["reinforced"] = True
     if isRunflat(s):
-        extra["runflat"] = True   
+        extra["runflat"] = True
+    if isSelfSeal(s):
+        extra["self_seal"] = True  
     if isStuddable(s):
         extra["studdable"] = True
     if isStudded(s):
