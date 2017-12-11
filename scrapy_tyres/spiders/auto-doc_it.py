@@ -53,6 +53,18 @@ class AutoDocIt(scrapy.Spider):
             price = entry.xpath('.//p[@class="actual_price"]/text()').extract_first()
             picture_url = entry.xpath('.//img[@class="tires_item_image "]/@src').extract_first()
 
+            ## estract eu labels
+            eu_fuel = response.xpath('//div[@class="eu_re"]//li[2]/img/@src').extract_first()
+            eu_wet = response.xpath('//div[@class="eu_re"]//li[4]/img/@src').extract_first()
+            eu_noise = response.xpath('//div[@class="eu_re"]//li[6]/text()').extract_first()
+
+            m=re.match(".+-letter-(.+)\.png",eu_fuel)
+            if m:
+                eu_fuel = m.group(1)
+            m=re.match(".+-letter-(.+)\.png",eu_wet)
+            if m:
+                eu_wet = m.group(1)
+                
             details =  {
                 "description": description,
                 "ean": ean,
@@ -62,7 +74,10 @@ class AutoDocIt(scrapy.Spider):
                 "product": product,
                 "size": size,
                 "picture_url": picture_url,
-                "url": url
+                "url": url,
+                "label_fuel": eu_fuel,
+                "label_wet": eu_wet,
+                "label_noise": eu_noise
                 }
 
             keys = entry.xpath('.//div[@class="description"]//div[@class="box"]//ul/li/span[@class="lc"]/text()').extract()
