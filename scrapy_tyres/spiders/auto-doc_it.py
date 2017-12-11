@@ -32,6 +32,7 @@ class AutoDocIt(scrapy.Spider):
         self.start_urls = ['http://www.auto-doc.it/pneumatici/%d-pollici?page=1' % n for n in [10,12,13,14,15,16,17,18,19,20,21,22,23,24,40,365,390,415]]
     def parse(self, response):
         for entry in response.xpath('//li[@class="ovVisLi"]'):
+            url = entry.xpath('.//div[@class="image"]/a/@href').extract_first()
             manufacturer_number = entry.xpath('.//div[@class="description"]//span[@style="font-size: 12px;"]/text()').extract_first().replace("MPN: ","")
             ##brand
             brand = entry.xpath('.//img[@class="tires_item_brand"]/@src').extract_first()
@@ -39,20 +40,21 @@ class AutoDocIt(scrapy.Spider):
             if match:
                 brand = match.group(1)
                 if bool(len(re.findall("IMAGE", brand,flags=re.IGNORECASE))):
-                    m=re.match(".+/(.+)-.+-.+$", brand)
+                    m=re.match(".+/(.+)-.+-.+$", url)
                     if m:
                         brand = m.group(1).replace("-", " ")
                         
             ean = entry.xpath('.//span[@class="article_number"]/text()').extract_first().replace("EAN: ","")
             product = entry.xpath('.//div[@class="name"]/a/text()').extract_first()
+            size  = entry.xpath('.//div[@class="nr"]/text()').extract_first()
+            description = "%s %s" % (product, size)
             p = re.compile(brand, re.IGNORECASE)
             product = re.sub(p,"", product, re.IGNORECASE)
-            size  = entry.xpath('.//div[@class="nr"]/text()').extract_first()
             price = entry.xpath('.//p[@class="actual_price"]/text()').extract_first()
             picture_url = entry.xpath('.//img[@class="tires_item_image "]/@src').extract_first()
-            url = entry.xpath('.//div[@class="image"]/a/@href').extract_first()
+
             details =  {
-                "description": "%s %s %s" % (brand, product, size),
+                "description": description,
                 "ean": ean,
                 "manufacturer_number": manufacturer_number,
                 "price": price,

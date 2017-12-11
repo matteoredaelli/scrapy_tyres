@@ -52,51 +52,56 @@ def normalize_brand(item):
     return item
 
 def normalize_load_index(item):
-    item["load_index"] = re.sub("\(.*\)","",item["load_index"]).strip()
-
+    if "load_index" in item:
+        item["load_index"] = re.sub("\(.*\)","",item["load_index"]).strip()
     return item
+
 def normalize_price(item):
-    s=item["price"]
-    if bool(len(re.findall("€", s))):
-        item["currency"] = "EUR"
-    elif bool(len(re.findall("$", s))):
-        item["currency"] = "USD"
+    if "price" in item:
+        s=item["price"]
+        if bool(len(re.findall("€", s))):
+            item["currency"] = "EUR"
+        elif bool(len(re.findall("$", s))):
+            item["currency"] = "USD"
     
-    s = s.replace("$", "").replace("€", "").replace(",", ".").strip()
-    item["price"] = s
+        s = s.replace("$", "").replace("€", "").replace(",", ".").strip()
+        item["price"] = s
     return item
 
 def normalize_product(item):
-    if "brand" in item:
+    if "brand" in item and "product" in item:
         item["product"] = item["product"].replace(item["brand"],"").strip()
     return item
 
 def normalize_size(item):
-    s = item["size"]
-    s = s.replace("rinnovati", "").replace(",", "").strip()
-    item["size"] = s
+    if "size" in item:
+        s = item["size"]
+        s = s.replace("rinnovati", "").replace(",", "").strip()
+        item["size"] = s
     return item
 
 def normalize_seasonality(item):
-    s = item["seasonality"]
-    if bool(len(re.findall("WINTER|INVERNAL|M\+S|SNOW", s))):
-        season = "WINTER"
-    elif bool(len(re.findall("SUMMER|ESTIV", s))):
-        season = "SUMMER"
-    elif bool(len(re.findall("SEASON|STAGIONI", s))):
-        season = "ALL_SEASONS"
-    else: 
-        season = s
-    item["seasonality"] = season
+    if "seasonality" in item:
+        s = item["seasonality"]
+        if bool(len(re.findall("WINTER|INVERNAL|M\+S|SNOW", s))):
+            season = "WINTER"
+        elif bool(len(re.findall("SUMMER|ESTIV", s))):
+            season = "SUMMER"
+        elif bool(len(re.findall("SEASON|STAGIONI", s))):
+            season = "ALL_SEASONS"
+        else: 
+            season = s
+        item["seasonality"] = season
     return item
 
-def normalize_vehicle(s):
-    s = item["vehicle"]
-    if bool(len(re.findall("AUTO|PKW", s))):
-        result = "CAR"
-    else:
-        result = s
-    item["vehicle"] = result
+def normalize_vehicle(item):
+    if "vehicle" in item:
+        s = item["vehicle"]
+        if bool(len(re.findall("AUTO|PKW", s))):
+            result = "CAR"
+        else:
+            result = s
+        item["vehicle"] = result
     return item
 
 

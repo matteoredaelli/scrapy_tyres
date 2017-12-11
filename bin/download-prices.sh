@@ -20,12 +20,14 @@
 YEAR=$(date +%Y)
 MONTH=$(date +%m)
 DAY=$(date +%d)
-outdir="data/sources/$YEAR/$MONTH/$DAY"
+outdir="data/sources"
+prefix=$YEAR-$MONTH-$DAY
 mkdir -p $outdir
 
 scrapy list > data/sources.csv
 
 for spider in $(scrapy list) ; do
-    echo scrapy crawl "${spider}" -t jsonlines -o $outdir/$spider.json
-    echo python3 bin/extract_products.py $outdir/$spider.json 
+    filename=$outdir/$prefix-$spider.json
+    echo scrapy crawl "${spider}" -t jsonlines -o $filename
+    echo python3 bin/extract_products.py $filename.json 
 done

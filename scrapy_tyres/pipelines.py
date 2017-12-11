@@ -25,6 +25,7 @@ class StoreFieldsPipeline(object):
             with open(self.filenames[f], "r") as fd:
                 lines = fd.read().splitlines()
                 self.data[f] = set(lines)
+            fd.closed
 
     def process_item(self, item, spider):
         for f in self.filenames:
@@ -32,12 +33,14 @@ class StoreFieldsPipeline(object):
                 self.data[f].add(item[f])
                 with open(self.filenames[f], "a+") as myfile:
                     myfile.write(item[f] + "\n")
+                myfile.closed
         return item
 
-    def close_spider(self, spider):
-        for f in self.filenames:
-            with open(self.filenames[f], "w") as output:
-                output.write(str(list(self.data[f])))
+    ##def close_spider(self, spider):
+        ##for f in self.filenames:
+        ##    with open(self.filenames[f], "w") as output:
+        ##        output.write(str(list(self.data[f])))
+        ##    output.closed
 
 class MappingFieldsPipeline(object):
     def open_spider(self, spider):
@@ -96,15 +99,16 @@ class NormalizeFieldsPipeline(object):
             # brand must be normalized before product
             keys = list(keys).sort()
             for f in item.keys():
-                f_new = f.lower().replace(":","").strip()
-                if f != f_new:
-                    item[f_new]=item[f]
-                    del item[f]
+                if item[f]:
+                    f_new = f.lower().replace(":","").strip()
+                    if f != f_new:
+                        item[f_new]=item[f]
+                        del item[f]
                     f = f_new
-                function = "normalize_%s" % f
-                if hasattr(tyre_utils, function) and item[f] is not None:
-                    function = "tyre_utils.%s(item)" % function
-                    item = eval(function)
+                    function = "normalize_%s" % f
+                    if hasattr(tyre_utils, function) and item[f] is not None:
+                        function = "tyre_utils.%s(item)" % function
+                        item = eval(function)
         return item
 
 class ExtractDataFromDescriptionPipeline(object):
