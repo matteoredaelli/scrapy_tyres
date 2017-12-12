@@ -1,5 +1,5 @@
 import re
-
+import pandas as pd
 ##
 ## isXXX
 ##
@@ -13,22 +13,22 @@ def isExtraLoad(s):
     return bool(len(re.findall(" XL ?", s)))
 
 def isNCS(s):
-    return bool(len(re.findall("SIL|ACO|ACOUSTIC|NST|SOUND|SILENT", s)))
+    return bool(len(re.findall(" SIL|ACO|ACOUSTIC|NST|SOUND|SILENT", s)))
 
 def isReinforced(s):
     return bool(len(re.findall(" RF ?", s)))
 
 def isRunflat(s):
-    return bool(len(re.findall("RUNFLAT|R-F|RFT|SSR|DSST|ROF|EMT|(RUN FLAT)", s)))
+    return bool(len(re.findall(" RUNFLAT|R-F|RFT|SSR|DSST|ROF|EMT|(RUN FLAT)|ZP", s)))
 
 def isSelfSeal(s):
-    return bool(len(re.findall("SEAL|CS", s)))
+    return bool(len(re.findall(" SEAL|CS", s)))
 
 def isStuddable(s):
-    return bool(len(re.findall("STUDDABLE|CHIODABILE", s)))
+    return bool(len(re.findall(" STUDDABLE|CHIODABILE", s)))
 
 def isStudded(s):
-    return bool(len(re.findall("STUDDED|CHIODATO", s)))
+    return bool(len(re.findall(" STUDDED|CHIODATO", s)))
 
 
 def normalizeCommonValues(s):
@@ -60,6 +60,16 @@ def normalize_brand(item):
 def normalize_load_index(item):
     if "load_index" in item:
         item["load_index"] = re.sub("\(.*\)","",item["load_index"]).strip()
+    return item
+
+def normalize_label_fuel(item):
+    if "label_fuel" in item:
+        item["label_fuel"].upper()
+    return item
+
+def normalize_label_wet(item):
+    if "label_wet" in item:
+        item["label_wet"].upper()
     return item
 
 def normalize_price(item):
@@ -132,11 +142,21 @@ def extractBrand(s):
 
 def extractOEMark(s):
     result = {}
-    l = re.findall(" ?(MOE|N0|N1|MO|AO|RO1|NH|MCLAREN|LRO|\*)", s, flags=re.IGNORECASE)
+    l = re.findall(" ?(MOE|N0|N1|MO|AO|RO\d|NH|MCLAREN|LRO|F0\d|\*)", s, flags=re.IGNORECASE)
     if len(l) > 0:
         result["oe_mark"] = l[0]
     return result
-        
+
+def extractOEModels(s, filename="data/oe_manufacturers.csv"):
+    oe = pd.read_csv(filename)
+    result = {"oe_models": []}
+    for manu in list(oe.MANUFACTURER):
+        regexp = r"(%s ?.*$)" % manu
+        l = re.findall(regexp, s)
+        if len(s) > 0:
+            result["oe_models"] = result["oe_models"] + l
+    return result
+
 def extractProduct(s):
     result = extractBrand(s)
     if "brand" in result:
@@ -218,6 +238,7 @@ def extractAll(item):
     result.update(extractExtraInfos(s))
     result.update(extractEan(s))
     result.update(extractOEMark(s))
+    result.update(extractOEModels(s))
     return(result)
 
 def mergeItems(item1, item2, append=False):

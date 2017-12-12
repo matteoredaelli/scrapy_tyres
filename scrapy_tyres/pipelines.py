@@ -77,7 +77,7 @@ class DefaultFieldsPipeline(object):
 
 class UppercasePipeline(object):
     def process_item(self, item, spider):
-        for f in ['brand', 'description', 'product', 'seasonality', "vehicle"]:
+        for f in ['brand', 'description', 'label_fuel', 'label_wet', 'product', 'seasonality', "vehicle"]:
             if f in item and item[f] is not None:
                 item[f] = item[f].upper()            
         return item
