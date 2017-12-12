@@ -20,16 +20,17 @@ import es
 
 import json, os, re, sys
 
-if len(sys.argv) != 2:
-    print('Usage: ' + sys.argv[0] + ' <sourcefile.json>')
+if len(sys.argv) != 3:
+    print('Usage: ' + sys.argv[0] + ' <sourcefile.json> elasticsearch_hostname')
     sys.exit(1)
 
 # Grab the input and output
 source = sys.argv[1]
+es_host = sys.argv[2]
 
 out_prefix="data/tyres"
 
-es = es.ES("fourier.it.pirelli.com")
+es = es.ES(es_host)
 
 with open(source, 'r') as f:
     for line in f:
