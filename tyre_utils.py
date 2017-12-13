@@ -86,7 +86,8 @@ def normalize_price(item):
 
 def normalize_product(item):
     if "brand" in item and "product" in item:
-        item["product"] = item["product"].replace(item["brand"],"").strip()
+        brand = item["brand"].replace("-", " ")
+        item["product"] = item["product"].replace(brand, "").strip()
     return item
 
 def normalize_size(item):

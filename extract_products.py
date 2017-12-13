@@ -37,7 +37,7 @@ with open(source, 'r') as f:
         line = line.strip()
         item = json.loads(line)
         item_new = tyre_utils.extractAll(item)
-        item = tyre_utils.mergeItems(item, item_new)
+        item = tyre_utils.mergeItems(item_new, item)
 
         ##if "ean" in item:
         ##  tyre_utils.updateMLTrainFile(item)
