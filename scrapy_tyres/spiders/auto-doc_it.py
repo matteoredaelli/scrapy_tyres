@@ -58,12 +58,19 @@ class AutoDocIt(scrapy.Spider):
             eu_wet = entry.xpath('.//div[@class="eu_re"]//li[4]/img/@src').extract_first()
             eu_noise = entry.xpath('.//div[@class="eu_re"]//li[6]/text()').extract_first()
 
-            m=re.match(".+-letter-(.+)\.png",eu_fuel)
-            if m:
-                eu_fuel = m.group(1)
-            m=re.match(".+-letter-(.+)\.png",eu_wet)
-            if m:
-                eu_wet = m.group(1)
+            if eu_fuel:
+                m=re.match(".+-letter-(.+)\.png",eu_fuel)
+                if m:
+                    eu_fuel = m.group(1)
+                else:
+                    eu_fuel = None
+            if eu_wet:
+                m=re.match(".+-letter-(.+)\.png",eu_wet)
+                if m:
+                    eu_wet = m.group(1)
+                else:
+                    eu_wet = None
+
                 
             details =  {
                 "description": description,
