@@ -12,15 +12,11 @@ class ES(store.Store):
     def __init__(self, hostname):
         self.HOSTNAME=hostname
         self.es = Elasticsearch([self.HOSTNAME])
+        self.es.indices.create(index=self.TYRE_DB, ignore=400)
         
     def add_source(self, source):
         index = "tyre-source-%s" % source
         self.es.indices.create(index=index, ignore=400)
-        
-    def setup(self):
-        for index in [self.TYRE_DB]:
-            # create an index in elasticsearch, ignore status code 400 (index already exists)
-            self.es.indices.create(index=index, ignore=400)
     
     def saveTyreByID(self, id, item):
         self.es.index(index=self.TYRE_DB, doc_type="tyre", id=id, body=item)

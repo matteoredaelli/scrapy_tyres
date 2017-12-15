@@ -21,7 +21,9 @@ import store_fs, store_es
 
 import json, os, re, sys
 
-if len(sys.argv) != 3:
+import logging
+
+if len(sys.argv) < 3:
     print('Usage: ' + sys.argv[0] + ' <sourcefile.json> elasticsearch_hostname')
     sys.exit(1)
 
@@ -34,18 +36,25 @@ out_prefix="data/tyres"
 es = store_es.ES(es_host)
 store_fs = store_fs.FS()
 
+
+logging.basicConfig(filename='extract_products.log',level=logging.DEBUG)
+
+# when using from command line --log=DEBUG
+# getattr(logging, loglevel.upper())
+
+
 with open(source, 'r') as f:
     for line in f:
         line = line.strip()
         item = json.loads(line)
         item_new = tyre_utils.extractAll(item)
-        item = tyre_utils.mergeItems(item_new, item)
+        item = tyre_utils.mergeItems(item, item_new)
 
         ##if "ean" in item:
         ##  tyre_utils.updateMLTrainFile(item)
             
         if "ean" in item and "manufacturer_number" in item:
-            #es.updateTyre(item)
+            es.updateTyre(item)
             store_fs.updateTyre(item)
         else:
             outpath = "%s/parked/%s" % (out_prefix, item["brand"])

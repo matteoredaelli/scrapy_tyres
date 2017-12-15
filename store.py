@@ -46,5 +46,6 @@ class Store(object):
         if item1:
             item = tyre_utils.mergeItems(item, item1)
         else:
-            logging.debug('adding new tyre')
+            logging.debug('adding new tyre: %s' % str(item))
+            
         return self.saveTyre(item)
