@@ -16,7 +16,8 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 import tyre_utils
-import es
+
+import store_fs, store_es
 
 import json, os, re, sys
 
@@ -30,7 +31,8 @@ es_host = sys.argv[2]
 
 out_prefix="data/tyres"
 
-es = es.ES(es_host)
+es = store_es.ES(es_host)
+store_fs = store_fs.FS()
 
 with open(source, 'r') as f:
     for line in f:
@@ -43,7 +45,8 @@ with open(source, 'r') as f:
         ##  tyre_utils.updateMLTrainFile(item)
             
         if "ean" in item and "manufacturer_number" in item:
-            es.updateTyre(item)
+            #es.updateTyre(item)
+            store_fs.updateTyre(item)
         else:
             outpath = "%s/parked/%s" % (out_prefix, item["brand"])
             filename = "%s/%s.json" % (outpath, item["id"])

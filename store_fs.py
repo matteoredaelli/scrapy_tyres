@@ -1,0 +1,28 @@
+import json
+import logging
+import store
+import os
+
+# by default we connect to localhost:9200
+
+
+class FS(store.Store):
+    TYRE_DB = "data/tyre-db"
+
+    def __init__(self):
+        import os
+        os.makedirs(self.TYRE_DB, exist_ok=True)
+
+    def getFilenameFromID(self, id):
+        filename = self.TYRE_DB + "/" + id
+        return filename
+    
+    def saveTyreByID(self, id, item):
+        filename = self.getFilenameFromID(id)
+        with open(filename, 'w') as f:
+            json.dump(item, f, ensure_ascii=False)           
+        
+    def getTyreByID(self, id):
+        filename = self.getFilenameFromID(id)
+        item = json.load(filename)
+        return item

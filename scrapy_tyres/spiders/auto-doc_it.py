@@ -54,9 +54,9 @@ class AutoDocIt(scrapy.Spider):
             picture_url = entry.xpath('.//img[@class="tires_item_image "]/@src').extract_first()
 
             ## estract eu labels
-            eu_fuel = response.xpath('//div[@class="eu_re"]//li[2]/img/@src').extract_first()
-            eu_wet = response.xpath('//div[@class="eu_re"]//li[4]/img/@src').extract_first()
-            eu_noise = response.xpath('//div[@class="eu_re"]//li[6]/text()').extract_first()
+            eu_fuel = response.xpath('.//div[@class="eu_re"]//li[2]/img/@src').extract_first()
+            eu_wet = response.xpath('.//div[@class="eu_re"]//li[4]/img/@src').extract_first()
+            eu_noise = response.xpath('.//div[@class="eu_re"]//li[6]/text()').extract_first()
 
             m=re.match(".+-letter-(.+)\.png",eu_fuel)
             if m:
