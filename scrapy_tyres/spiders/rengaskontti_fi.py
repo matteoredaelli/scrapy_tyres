@@ -34,8 +34,13 @@ class RengaskonttiFi(scrapy.Spider):
         
     def parse(self, response):
         mydata = {"url": response.url}
-        s = response.xpath('//meta[@name="description"]/@content').extract_first().split(" , ")
-        if s and len(s) == 2:
+        s = response.xpath('//meta[@name="description"]/@content').extract_first()
+        if not s:
+            ## eancode does not exist
+            return None
+        
+        s = s.split(" , ")
+        if len(s) == 2:
             mydata["description"] = s[0]
             mydata["price"] = s[1]
 
