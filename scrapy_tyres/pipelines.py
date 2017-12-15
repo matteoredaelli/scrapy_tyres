@@ -9,7 +9,8 @@ import datetime
 import re
 import utils
 import tyre_utils
-import pandas as pd
+#import pandas as pd
+import csv
 
 class StoreFieldsPipeline(object):
     def __init__(self):
@@ -44,8 +45,12 @@ class StoreFieldsPipeline(object):
 
 class MappingFieldsPipeline(object):
     def open_spider(self, spider):
-        df = pd.read_csv("data/source-fields-mapping.csv")
-        self.fields = dict(df.values)
+        ## uf8 keys are converted .. not good!
+        ## df = pd.read_csv("data/source-fields-mapping.csv")
+        ## self.fields = dict(df.values)
+        with open("data/source-fields-mapping.csv") as f:
+            self.fields = dict(filter(None, csv.reader(f)))
+
 
     def process_item(self, item, spider):
         item_new = dict(item)
