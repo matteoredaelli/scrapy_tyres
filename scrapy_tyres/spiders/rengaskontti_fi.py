@@ -26,25 +26,62 @@ import utils
 class RengaskonttiFi(scrapy.Spider):
     name = "rengaskontti.fi"
     
-    def __init__(self, ean, *args, **kwargs):
+    def __init__(self, *args, **kwargs):
         super(RengaskonttiFi, self).__init__(*args, **kwargs)
         self.allowed_domains = ["rengaskontti.fi"]
-        self.ean = ean
-        self.start_urls = ['https://www.rengaskontti.fi/auton-renkaat/%s' % ean]
-        
+        self.start_urls = ['https://www.rengaskontti.fi/auton-renkaat/%s/' % x for x in ["MICHELIN", "PIRELLI"]]
+
     def parse(self, response):
-        mydata = {"url": response.url}
+        mydata = {}
+        for entry in response.xpath('//tr'):
+            brand = entry.xpath('.//span[@class="merkki nobr"]/text()').extract_first()
+            product = entry.xpath('.//span[@class="malli nobr"]/text()').extract_first()
+            size = entry.xpath('.//span[@class="koko nobr"]/text()').extract_first()
+            description = "%s %s %s" % (brand, product, size)
+            labels = entry.xpath('.//img/@alt').extract()
+            if labels and len(labels) >= 7:
+                label_fuel = labels[2]
+                if label_fuel:
+                    label_fuel = label_fuel.split(": ")
+                    if len(label_fuel) == 2:
+                        mydata["label_fuel"] = label_fuel[1]
+                label_wet = labels[4]
+                if label_wet:
+                    label_wet = label_wet.split(": ")
+                    if len(label_wet) == 2:
+                        mydata["label_wet"] = label_wet[1]
+                label_noise = labels[6]
+                if label_noise:
+                    label_noise = label_noise.split(": ")
+                    if len(label_noise) == 2:
+                        mydata["label_noise"] = label_noise[1]                        
+            mydata["brand"] = brand
+            mydata["product"] = product
+            mydata["size"] = size
+            mydata["description"] = description
+            url = entry.xpath('./td/a/@href').extract_first()
+            url = response.urljoin(url)
+            mydata["url"] = url
+            mydata["seasonality"] = entry.xpath('./td[@class="tspeksi"]/img/@alt').extract_first()
+            mydata["type"] = entry.xpath('./td[@class="tspeksi"]//span[@class="malli"]/text()').extract_first()
+            mydata["price"] = entry.xpath('./td[@class="thinta"]//span/text()').extract_first()
+
+            if not bool(re.findall("/OMA.+", url)):
+                yield scrapy.Request(response.urljoin(url), callback=self.parse_tyre, meta={'mydata': mydata})
+            
+    def parse_tyre(self, response):
+        mydata = response.meta['mydata']
         s = response.xpath('//meta[@name="description"]/@content').extract_first()
-        if not s:
+        if s is None:
             ## eancode does not exist
             return None
         
         s = s.split(" , ")
         if len(s) == 2:
-            mydata["description"] = s[0]
-            mydata["price"] = s[1]
+            mydata["description2"] = s[0]
+            mydata["price2"] = s[1]
 
-        mydata['product'] = response.xpath('//legend//text()').extract_first()
+        mydata['product2'] = response.xpath('//legend//text()').extract_first()
 
         keys = response.xpath('//fieldset[2]//p//strong//text()').extract()
         values = response.xpath('//fieldset[2]//p//strong/../text()[1]').extract()
