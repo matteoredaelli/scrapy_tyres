@@ -29,7 +29,7 @@ def isStuddable(s):
     return bool(len(re.findall(" STUDDABLE|CHIODABILE", s)))
 
 def isStudded(s):
-    return bool(len(re.findall(" STUDDED|CHIODATO", s)))
+    return bool(len(re.findall(" STUDDED|CHIODATO|NASTARENGAS", s)))
 
 
 def normalizeCommonValues(s):
@@ -78,7 +78,7 @@ def normalize_price(item):
         s=item["price"]
         if bool(len(re.findall("€", s))):
             item["currency"] = "EUR"
-        elif bool(len(re.findall("$", s))):
+        elif bool(len(re.findall("\$", s))):
             item["currency"] = "USD"
     
         s = s.replace("$", "").replace("€", "").replace(",", ".").strip()
@@ -101,11 +101,12 @@ def normalize_size(item):
 def normalize_seasonality(item):
     if "seasonality" in item:
         s = item["seasonality"]
-        if bool(len(re.findall("WINTER|INVERNAL|M\+S|SNOW", s))):
+        s.replace("(EURO)","").strip()
+        if bool(len(re.findall("WINTER|INVERNAL|M\+S|SNOW|KITKARENGAS|NASTARENGAS", s))):
             season = "WINTER"
-        elif bool(len(re.findall("SUMMER|ESTIV", s))):
+        elif bool(len(re.findall("SUMMER|ESTIV|KESÄRENGAS", s))):
             season = "SUMMER"
-        elif bool(len(re.findall("SEASON|STAGIONI", s))):
+        elif bool(len(re.findall("SEASON|STAGIONI|4MEVSIM|JOKASÄÄNRENGAS", s))):
             season = "ALL_SEASONS"
         else: 
             season = s
@@ -117,6 +118,12 @@ def normalize_vehicle(item):
         s = item["vehicle"]
         if bool(len(re.findall("AUTO|PKW", s))):
             result = "CAR"
+        elif s == "HA":
+            result = "CAR"
+        elif s == "PA":
+            result = "VAN"
+        elif s == "4x4" or s == "4X4":
+            result = "SUV"
         else:
             result = s
         item["vehicle"] = result

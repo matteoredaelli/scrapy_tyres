@@ -22,6 +22,14 @@ import store_fs, store_es
 import json, os, re, sys
 
 import logging
+import scrapy_tyres.pipelines
+
+PIPELINES = ['scrapy_tyres.pipelines.MappingFieldsPipeline', 'scrapy_tyres.pipelines.CleanValuesPipeline', 'scrapy_tyres.pipelines.NormalizeCommonValuesPipeline', 'scrapy_tyres.pipelines.UppercasePipeline', 'scrapy_tyres.pipelines.NormalizeFieldsPipeline']
+
+pipelines = {}
+for p in PIPELINES:
+    newclass = "%s()" % p
+    pipelines[p] = eval(newclass)
 
 if len(sys.argv) < 3:
     print('Usage: ' + sys.argv[0] + ' <sourcefile.json> elasticsearch_hostname')
@@ -47,6 +55,10 @@ with open(source, 'r') as f:
     for line in f:
         line = line.strip()
         item = json.loads(line)
+
+        for p in pipelines:
+            function = "pipelines[\"%s\"].process_item(item, 0)" % p
+            item = eval(function)
         item_new = tyre_utils.extractAll(item)
         item = tyre_utils.mergeItems(item, item_new)
 

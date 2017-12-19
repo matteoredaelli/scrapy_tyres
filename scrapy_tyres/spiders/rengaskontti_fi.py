@@ -68,7 +68,7 @@ class RengaskonttiFi(scrapy.Spider):
             url = response.urljoin(url)
             mydata["url"] = url
             mydata["seasonality"] = entry.xpath('./td[@class="tspeksi"]/img/@alt').extract_first()
-            mydata["type"] = entry.xpath('./td[@class="tspeksi"]//span[@class="malli"]/text()').extract_first()
+            mydata["vehicle"] = entry.xpath('./td[@class="tspeksi"]//span[@class="malli"]/text()').extract_first()
             mydata["price"] = entry.xpath('./td[@class="thinta"]//span/text()').extract_first()
 
             if not bool(re.findall("/OMA.+", url)):
@@ -83,10 +83,11 @@ class RengaskonttiFi(scrapy.Spider):
         
         s = s.split(" , ")
         if len(s) == 2:
-            mydata["description2"] = s[0]
-            mydata["price2"] = s[1]
+            #mydata["description2"] = s[0]
+            #mydata["price2"] = s[1]
+            pass
 
-        mydata['product2'] = response.xpath('//legend//text()').extract_first()
+       # mydata['product2'] = response.xpath('//legend//text()').extract_first()
 
         keys = response.xpath('//fieldset[2]//p//strong//text()').extract()
         values = response.xpath('//fieldset[2]//p//strong/../text()[1]').extract()
@@ -97,8 +98,9 @@ class RengaskonttiFi(scrapy.Spider):
             keys = [x.replace(":","").lower() for x in keys]
             details = zip(keys, values)
             mydata.update(details)
-            if "eu-rengasmerkinnät" in mydata:
-                del mydata["eu-rengasmerkinnät"]
+            for f in ["vierintämelu", "eu-rengasmerkinnät", "märkäpito", "taloudellisuus"]:
+                if f in mydata:
+                    del mydata[f]
 
         ## eu labels
         values = response.xpath('//fieldset[2]//p//strong/../text()').extract()
@@ -106,6 +108,5 @@ class RengaskonttiFi(scrapy.Spider):
             labels = utils.list2dict([values[-1], values[-2], values[-3]])
             mydata.update(labels)
 
-        #mydata["id"] = mydata["EAN"]
         yield mydata
             
