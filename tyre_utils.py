@@ -1,5 +1,6 @@
 import re
 import pandas as pd
+import logging
 ##
 ## isXXX
 ##
@@ -263,6 +264,20 @@ def mergeItems(item1, item2, append=False):
             item1[f] = v
     return item1
 
+def mergeItemIntoTyre(item, tyre={} ):
+    if item is None:
+        return tyre
+    if "source" in item and item["source"]:
+        source = item["source"]
+    else:
+        source = "Unknow"
+    for f in item:
+        if item[f] is not None:
+            if not (f in tyre):
+                tyre[f] = {}
+            tyre[f][source] = item[f]
+    return tyre
+            
 def updateMLTrainFile(item, filename="data/ml_product.train"):
     if "ean" in item and "brand" in item and "description" in item:
         s = "__label__%s_%s %s %s" % (item["brand"].replace(" ",""), item["ean"], item["ean"], item["description"])
@@ -271,3 +286,17 @@ def updateMLTrainFile(item, filename="data/ml_product.train"):
         with open(filename, "a+") as f:
             f.write(s + "\n")
         f.closed
+
+def load_file(filename):
+    with open(filename, "r") as fd:
+        lines = fd.read().splitlines()
+    return set(lines)
+
+def load_brands(filename="data/brands.csv"):
+   return load_file(filename)
+
+def load_sizes(filename="data/sizes.csv"):
+   return load_file(filename)
+
+def load_products(filename="data/products.csv"):
+   return load_file(filename)

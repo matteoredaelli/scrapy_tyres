@@ -54,8 +54,8 @@ with open(source, 'r') as f:
         ##  tyre_utils.updateMLTrainFile(item)
             
         if "ean" in item and "manufacturer_number" in item:
-            es.updateTyre(item)
-            store_fs.updateTyre(item)
+            es.saveItem(item)
+            store_fs.saveItem(item)
         else:
             outpath = "%s/parked/%s" % (out_prefix, item["brand"])
             filename = "%s/%s.json" % (outpath, item["id"])

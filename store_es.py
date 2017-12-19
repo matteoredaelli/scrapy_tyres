@@ -7,7 +7,7 @@ import store
 
 
 class ES(store.Store):
-    TYRE_DB = "tyre-db"
+    TYRE_DB = "tyre-db-dev"
 
     def __init__(self, hostname):
         self.HOSTNAME=hostname
@@ -18,9 +18,9 @@ class ES(store.Store):
         index = "tyre-source-%s" % source
         self.es.indices.create(index=index, ignore=400)
     
-    def saveTyreByID(self, id, item):
-        self.es.index(index=self.TYRE_DB, doc_type="tyre", id=id, body=item)
+    def saveTyreByID(self, id, tyre):
+        self.es.index(index=self.TYRE_DB, doc_type="tyre", id=id, body=tyre)
         
     def getTyreByID(self, id):
-        item = self.es.get(index=self.TYRE_DB, doc_type="tyre", id=id)["_source"]
-        return item
+        tyre = self.es.get(index=self.TYRE_DB, doc_type="tyre", id=id)["_source"]
+        return tyre
