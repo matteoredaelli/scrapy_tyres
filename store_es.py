@@ -7,7 +7,7 @@ import store
 
 
 class ES(store.Store):
-    TYRE_DB = "tyre-db-dev"
+    TYRE_DB = "tyre-db"
 
     def __init__(self, hostname):
         self.HOSTNAME=hostname
