@@ -21,7 +21,7 @@
 
 import scrapy
 import datetime, re
-import utils
+import utils, tyre_utils
 
 class RengaskonttiFi(scrapy.Spider):
     name = "rengaskontti.fi"
@@ -29,11 +29,16 @@ class RengaskonttiFi(scrapy.Spider):
     def __init__(self, *args, **kwargs):
         super(RengaskonttiFi, self).__init__(*args, **kwargs)
         self.allowed_domains = ["rengaskontti.fi"]
-        self.start_urls = ['https://www.rengaskontti.fi/auton-renkaat/%s/' % x for x in ["MICHELIN", "PIRELLI"]]
+        self.brands = tyre_utils.load_brands()
+        self.brands = [s.replace("-", "_").replace(" ", "_") for s in self.brands]
+     
+        self.start_urls = ['https://www.rengaskontti.fi/auton-renkaat/%s/' % x for x in self.brands] 
+        #self.start_urls =                   ['https://www.rengaskontti.fi/mp-renkaat/%s/' % x for x in self.brands]
 
     def parse(self, response):
-        mydata = {}
-        for entry in response.xpath('//tr'):
+
+        for entry in response.xpath('//table[@class="rengastaulu clear"]//tr | //table[@class="rengastaulu"]//tr'):
+            mydata = {}
             brand = entry.xpath('.//span[@class="merkki nobr"]/text()').extract_first()
             product = entry.xpath('.//span[@class="malli nobr"]/text()').extract_first()
             size = entry.xpath('.//span[@class="koko nobr"]/text()').extract_first()
@@ -92,12 +97,15 @@ class RengaskonttiFi(scrapy.Spider):
             keys = [x.replace(":","").lower() for x in keys]
             details = zip(keys, values)
             mydata.update(details)
-            del mydata["eu-rengasmerkinnät"]
+            if "eu-rengasmerkinnät" in mydata:
+                del mydata["eu-rengasmerkinnät"]
 
         ## eu labels
         values = response.xpath('//fieldset[2]//p//strong/../text()').extract()
         if len(values) >= 3:
             labels = utils.list2dict([values[-1], values[-2], values[-3]])
             mydata.update(labels)
+
+        #mydata["id"] = mydata["EAN"]
         yield mydata
             
