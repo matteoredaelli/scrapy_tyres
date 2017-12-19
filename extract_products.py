@@ -65,7 +65,9 @@ with open(source, 'r') as f:
         ##if "ean" in item:
         ##  tyre_utils.updateMLTrainFile(item)
             
-        if "ean" in item and "manufacturer_number" in item:
+        if "ean" in item:
+            logging.warning("Parsing %s" % item["ean"])
+            
             es.saveItem(item)
             store_fs.saveItem(item)
         else:

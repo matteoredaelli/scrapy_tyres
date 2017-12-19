@@ -21,9 +21,10 @@
 
 import scrapy
 import datetime, re
+import tyre_utils
 
 sizes = [
-     ["155","65","13"],
+##     ["155","65","13"],
 ## ["155","65","13"],
 ## ["155","65","14"],
 ## ["155","70","13"],
@@ -168,7 +169,7 @@ sizes = [
 ## ["245","40","19"],
 ## ["245","45","16"],
 ## ["245","45","17"],
-## ["245","70","16"],
+ ["245","70","16"],
 # ["255","30","19"],
 # ["255","35","18"],
 # ["255","35","19"],
@@ -193,7 +194,7 @@ class GommadirettoIt(scrapy.Spider):
     
     def __init__(self, width="195", height="65", diameter="15", details=0, *args, **kwargs):
         super(GommadirettoIt, self).__init__(*args, **kwargs)
-        self.allowed_domains = ["gommadiretto.it"]
+        self.allowed_domains = ["gommadiretto.it", "autopink-shop.it"]
         self.details = int(details)
         self.start_urls = ['http://www.gommadiretto.it/cgi-bin/rshop.pl?s_p=&rsmFahrzeugart=PKW&s_p_=Tutti&dsco=130&tyre_for=&search_tool=&ist_hybris_orig=&with_bootstrap_flag=1&suchen=--Mostrare+tutti+gli+pneumatici--&m_s=3&x_tyre_for=&cart_id=88618236.130.22966&sowigan=&Breite=%s&Quer=%s&Felge=%s&Speed=&Load=&Marke=&kategorie=&filter_preis_von=&filter_preis_bis=&homologation=&Ang_pro_Seite=50' % (width, height, diameter) for [width, height, diameter] in sizes]
         
@@ -204,9 +205,11 @@ class GommadirettoIt(scrapy.Spider):
             price1 = entry.xpath('.//div[@class="price"]//b/text()').extract_first()
             price2 = entry.xpath('.//div[@class="price"]//small/text()').extract_first()
             product = entry.xpath('.//div[@class="formcaddyfab"]//i/b/text()').extract_first()
-            size = " ".join(entry.xpath('.//div[@class="t_size"]//b/text()').extract())
             ##description = " ".join(entry.xpath('.//div[@class="t_size"]//a/text()').extract())
             description = " ".join(entry.xpath('.//div[@class="t_size"]//text()').extract())
+            size = tyre_utils.extractSize(description)
+            index = tyre_utils.extractIndexes(description)
+            size = "%s/%s %s%s-%s%s" % (size["width"], size["series"], size["radial"], size["diameter"], index["load_index"], index["speed_index"])
             season = entry.xpath('.//div[@class="divformcaddy"]/span/text()').extract_first()
             ##url = "http://www.gommadiretto.it/cgi-bin/rshop.pl?details=Ordern&typ=" + id
             url = "https://www.gommadiretto.it/rshop/Pneumatici/%s/%s/%s/%s" % (brand, product, size, id)
@@ -219,8 +222,7 @@ class GommadirettoIt(scrapy.Spider):
                 "id": id,
                 "price": price1 + price2,
                 "seasonality": season,
-                "description": "%s %s %s" % (brand, product, description),
-                "size": size
+                "description": "%s %s %s" % (brand, product, description)
             }
             if self.details == 0:
                 yield mydata

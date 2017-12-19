@@ -190,11 +190,16 @@ def extractIndexes(s):
     ## TODO: gestire 107/110
     ## re.findall("(\d+)/?(\d+)([RSTUVZ])", s)
     result = {}
-    m = re.findall("(\d+)([RSTUVWZ])", s)
+    m = re.findall("(\d+/?\d+)([RSTUVWZ])", s)
     l = len(m)
     if l > 0:
-        result['load_index']  = m[l-1][0]
         result['speed_index'] = m[l-1][1]
+        load_index  = m[l-1][0]
+        load_index_list =  load_index.split("/")
+        result['load_index'] = load_index_list[0]
+        if len(load_index_list) == 2:
+            result['load_index2'] = load_index_list[1]
+        
     return(result)
 
 def extractSize(s):
@@ -202,11 +207,12 @@ def extractSize(s):
     ##   Hankook RW06 175 R14C 99Q
     result = {}
     if s is not None:
-        match = re.findall("(\d+)/(\d*) ?Z?R?(\d+)", s)
+        match = re.findall("(\d+)/(\d*) ?(Z?R?)(\d+)", s)
         if len(match) > 0:
             result["width"]    = match[0][0]
             result["series"]   = match[0][1]
-            result["diameter"] = match[0][2]
+            result["radial"]   = match[0][2]
+            result["diameter"] = match[0][3]
         else:
             result["error"] = "Cannot extract a size from '%s'" % s
     return result

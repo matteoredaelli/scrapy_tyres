@@ -70,6 +70,10 @@ class DefaultFieldsPipeline(object):
             item["crawled"] = datetime.datetime.utcnow()
         if "source" not in item:
             item["source"] = spider.name
+        if "description" in item and "size" not in item:
+            size = tyre_utils.extractSize(item["description"])
+            size = "%s/%s %s%s" % (size["width"], size["series"], size["radial"], size["diameter"])
+            item["size"] = size
         ## currency could be understood ffrom the internet domain (.it, .de, ..) or $ in price values
         item["currency"] = "EUR"
         
