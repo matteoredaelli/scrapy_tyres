@@ -28,7 +28,6 @@ class AutopartiIt(scrapy.Spider):
     def __init__(self, width="195", height="65", diameter="15", *args, **kwargs):
         super(AutopartiIt, self).__init__(*args, **kwargs)
         self.allowed_domains = ["autoparti.it"]
-        self.today = datetime.date.today().strftime("%Y-%m-%d")
         #self.start_urls = ["http://www.autoparti.it/pneumatici?Width=%s&CrossSections=%s&Size=%s&Season=&page=1" % (width, height, diameter)]
         self.start_urls = ['http://www.autoparti.it/pneumatici/%d-pollici?page=1' % n for n in [10,12,13,14,15,16,17,18,19,20,21,22,23,24,40,365,390,415]]
 
@@ -56,11 +55,9 @@ class AutopartiIt(scrapy.Spider):
             mydata["ean"] = ean
             mydata["extra"] = extra
             mydata["picture_url"] = picture_url
-            mydata["product_url"] = product_url
+            mydata["url"] = product_url
             mydata["price"] = price
-            mydata["season"] = season
-            mydata["source"] = self.name
-            mydata['day'] = self.today
+            mydata["seasonality"] = season
                         
             yield mydata
 

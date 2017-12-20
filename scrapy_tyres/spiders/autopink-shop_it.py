@@ -17,7 +17,7 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 # usage:
-#   scrapy crawl gommadiretto.it -t jsonlines -o data/a.json -a width=265 -a height=70 -a diameter=16
+#   scrapy crawl autopink-shop.it -t jsonlines -o data/a.json -a width=265 -a height=70 -a diameter=16
 
 import scrapy
 import datetime, re
@@ -191,13 +191,13 @@ sizes = [
     ]
     
 class GommadirettoIt(scrapy.Spider):
-    name = "gommadiretto.it"
+    name = "autopink-shop.it"
     
     def __init__(self, width="195", height="65", diameter="15", details=0, *args, **kwargs):
         super(GommadirettoIt, self).__init__(*args, **kwargs)
-        self.allowed_domains = ["gommadiretto.it", "autopink-shop.it"]
+        self.allowed_domains = ["autopink-shop.it", "autopink-shop.it"]
         self.details = int(details)
-        self.start_urls = ['http://www.gommadiretto.it/cgi-bin/rshop.pl?s_p=&rsmFahrzeugart=PKW&s_p_=Tutti&dsco=130&tyre_for=&search_tool=&ist_hybris_orig=&with_bootstrap_flag=1&suchen=--Mostrare+tutti+gli+pneumatici--&m_s=3&x_tyre_for=&cart_id=88618236.130.22966&sowigan=&Breite=%s&Quer=%s&Felge=%s&Speed=&Load=&Marke=&kategorie=&filter_preis_von=&filter_preis_bis=&homologation=&Ang_pro_Seite=50' % (width, height, diameter) for [width, height, diameter] in sizes]
+        self.start_urls = ['http://www.autopink-shop.it/cgi-bin/rshop.pl?s_p=&rsmFahrzeugart=PKW&s_p_=Tutti&dsco=130&tyre_for=&search_tool=&ist_hybris_orig=&with_bootstrap_flag=1&suchen=--Mostrare+tutti+gli+pneumatici--&m_s=3&x_tyre_for=&cart_id=88618236.130.22966&sowigan=&Breite=%s&Quer=%s&Felge=%s&Speed=&Load=&Marke=&kategorie=&filter_preis_von=&filter_preis_bis=&homologation=&Ang_pro_Seite=50' % (width, height, diameter) for [width, height, diameter] in sizes]
         
     def parse(self, response):
         for entry in response.xpath('//div[@class="artikelklotz ajax_artikelklotz ajax_suchergebnisliste_artikelklotz"]'):
@@ -210,7 +210,7 @@ class GommadirettoIt(scrapy.Spider):
             description = " ".join(entry.xpath('.//div[@class="t_size"]//text()').extract())
             description = "%s %s %s" % (brand, product, description)
             season = entry.xpath('.//div[@class="divformcaddy"]/span/text()').extract_first()
-            url = "http://www.gommadiretto.it/cgi-bin/rshop.pl?details=Ordern&typ=" + id
+            url = "http://www.autopink-shop.it/cgi-bin/rshop.pl?details=Ordern&typ=" + id
             mydata =  {
                 "brand": brand,
                 "url": url,

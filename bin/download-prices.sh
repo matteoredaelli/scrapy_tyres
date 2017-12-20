@@ -16,7 +16,7 @@
 #    You should have received a copy of the GNU General Public License
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
-
+elasticserver=$1
 YEAR=$(date +%Y)
 MONTH=$(date +%m)
 DAY=$(date +%d)
@@ -29,5 +29,5 @@ scrapy list > data/sources.csv
 for spider in $(scrapy list) ; do
     filename=$outdir/$prefix-$spider.json
     echo scrapy crawl "${spider}" -t jsonlines -o $filename
-    echo python3 bin/extract_products.py $filename.json 
+    echo python3 bin/extract_products.py $filename.json $elasticserver
 done

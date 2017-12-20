@@ -184,7 +184,7 @@ def extractEan(s):
     l = re.findall(" ?(\d{13})", s)
     if len(l) > 0:
         result["ean"] = l[0]
-    return(result)
+    return result
 
 def extractIndexes(s):
     ## TODO: gestire 107/110
@@ -200,7 +200,7 @@ def extractIndexes(s):
         if len(load_index_list) == 2:
             result['load_index2'] = load_index_list[1]
         
-    return(result)
+    return result
 
 def extractSize(s):
     ## TODO: fails with
