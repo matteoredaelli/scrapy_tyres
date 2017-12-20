@@ -72,9 +72,9 @@ with open(source, 'r') as f:
             store_fs.saveItem(item)
         else:
             outpath = "%s/parked/%s" % (out_prefix, item["brand"])
-            filename = "%s/%s.json" % (outpath, item["id"])
+            filename = "%s/%s.json" % (outpath, item["description"])
             outpath = outpath.replace(" ","-")
-            filename = filename.replace(" ","-").replace("'","")       
+            filename = filename.replace(" ","-").replace("'","").replace("/","-")
             os.makedirs(outpath, exist_ok=True)
             with open(filename, 'w+') as f:
                 json.dump(item, f)

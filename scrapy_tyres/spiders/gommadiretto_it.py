@@ -208,7 +208,6 @@ class GommadirettoIt(scrapy.Spider):
             product = entry.xpath('.//div[@class="formcaddyfab"]//i/b/text()').extract_first()
             ##description = " ".join(entry.xpath('.//div[@class="t_size"]//a/text()').extract())
             description = " ".join(entry.xpath('.//div[@class="t_size"]//text()').extract())
-            description = "%s %s %s" % (brand, product, description)
             season = entry.xpath('.//div[@class="divformcaddy"]/span/text()').extract_first()
             url = "http://www.gommadiretto.it/cgi-bin/rshop.pl?details=Ordern&typ=" + id
             mydata =  {

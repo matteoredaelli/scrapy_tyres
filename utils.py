@@ -10,8 +10,10 @@ def clean_text(text):
     return re.sub(" +", u" ", t).strip()
 
 def clean_dict(d):
-    for i in d:
+    for i in list(d.keys()):
         d[i] = clean_text(d[i])
+        if d[i] is None or d[i] == "" or d[i] == "missing":
+            del d[i]
     return d
 
 def json2df(infile):

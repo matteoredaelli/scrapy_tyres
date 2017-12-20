@@ -17,7 +17,6 @@ class StoreFieldsPipeline(object):
         self.filenames = {
             'brand': "data/brands.csv",
             'product': "data/products.csv",
-            'size': "data/sizes.csv"
             }
         self.data = {}
         
@@ -79,9 +78,12 @@ class DefaultFieldsPipeline(object):
         
         ## if ID is not defined, it will be taken from url
         if "id" not in item:
-            m = re.findall(".+/(.+)$", item["url"])
-            if m and len(m) > 0:
-                item["id"] = m[0].replace(".html", "").replace("pneumatico-","").replace("/","")
+            if "ean" in item:
+                item["id"] = item["ean"]
+            else:
+                m = re.findall(".+/(.+)$", item["url"])
+                if m and len(m) > 0:
+                    item["id"] = m[0].replace(".html", "").replace("pneumatico-","").replace("/","")
         return item
 
 class UppercasePipeline(object):
