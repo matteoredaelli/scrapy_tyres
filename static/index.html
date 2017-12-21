@@ -30,7 +30,7 @@ app.config(['$httpProvider', function($httpProvider) {
 
 app.controller('planetController', function($scope, $http, $location) {
     $scope.search = function(q) {
-      var url = $location.protocol() + "://" + location.host + "/es_f/tyre-db/_search?pretty=true&q=" + q;
+      var url = $location.protocol() + "://" + location.host + "/es_f/tyre-db-dev/_search?pretty=true&q=" + q;
       $http.get(url)
       	.then(function(response) {
             $scope.results = response.data.hits.hits;
@@ -84,12 +84,26 @@ app.controller('planetController', function($scope, $http, $location) {
       <div>
         <h1>Tyre Competitor database</h1>
 	
-          <div ng-repeat="doc in results"><h2> [[doc._source.brand]] - [[doc._source.ean]]</h2>
-            <ul>
-              <li ng-repeat="(key,value) in doc._source">
-                [[ key ]] : [[ value ]]
-              </li>
-            </ul>
+          <div ng-repeat="doc in results"><h2> [[doc._id]]</h2>
+            <table class="table table-striped">
+                 <thead>
+      <tr>
+        <th>EAN</th>
+        <th>Attributes</th>
+      </tr>
+    </thead>
+    <tbody>
+             <tr ng-repeat="(key,value) in doc._source">
+                <td>[[key]]</td>
+                <td>
+                  <div ng-repeat="(k,v) in value">
+                    [[ v ]] ([[ k ]])<br />
+                  </div>
+                </ul>
+                </td>
+	     </tr>
+    </tbody>
+            </table>
 	  </div>
 
       </div>

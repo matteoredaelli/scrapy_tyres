@@ -1,7 +1,7 @@
 from flask import Flask
-from flask import request
+from flask import request, render_template
 
-app = Flask(__name__,  static_url_path='www/')
+app = Flask(__name__)
 
 import tyre_utils
 import utils
@@ -10,9 +10,9 @@ import json
 VERSION=0.1
 
 
-@app.route('/')
+@app.route('/a')
 def root():
-    return app.send_static_file('index.html')
+    return render_template('index.html')
 
 @app.route('/version')
 def version():
