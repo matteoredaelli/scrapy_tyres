@@ -130,6 +130,8 @@ def normalize_vehicle(item):
     return item
 
 
+
+
 ##
 ## extractXXX
 ##
@@ -176,7 +178,9 @@ def extractProduct(s):
         if len(m) > 0:
             result["product"] = m[0]
         else:
-            result["error"] = "cannot extract product from description '%s'" % s
+            if not "logging" in result:
+                result["logging"] = []
+            result["logging"].append("cannot extract product from description '%s'" % s)
     return result
 
 def extractEan(s):
@@ -203,18 +207,23 @@ def extractIndexes(s):
     return result
 
 def extractSize(s):
-    ## TODO: fails with
+    ## TODO: manginc C
     ##   Hankook RW06 175 R14C 99Q
     result = {}
     if s is not None:
-        match = re.findall("(\d+)/(\d*) ?(Z?R?)(\d+)", s)
+        match = re.findall("(\d+)?/(\d*) ?(ZR|R)(\d+)(C)?", s)
         if len(match) > 0:
             result["width"]    = match[0][0]
             result["series"]   = match[0][1]
             result["radial"]   = match[0][2]
             result["diameter"] = match[0][3]
+            if match[0][4].upper() == "C":
+                result["vehicle"] = "LT"
+            result["root"] = build_root(result)
         else:
-            result["error"] = "Cannot extract a size from '%s'" % s
+            if not "logging" in result:
+                result["logging"] = []
+            result["logging"].append("Cannot extract the 'size' from '%s'" % s)
     return result
 
 def extractSeasonality(s):
@@ -248,6 +257,7 @@ def extractExtraInfos(s):
 def extractAll(item):
     s = item["description"]
     result = extractProduct(s)
+    s = s.replace(result["brand"] + " " + result["product"], "").strip()
     result.update(extractSize(s))
     result.update(extractIndexes(s))
     result.update(extractExtraInfos(s))
@@ -313,3 +323,11 @@ def load_sizes(filename="data/sizes.csv"):
 
 def load_products(filename="data/products.csv"):
    return load_file(filename)
+
+
+
+def build_root(item):
+    size = None
+    if "width" in item and "series" in item and "diameter" in item and "radial" in item:
+        size = "%s/%s %s%s" % (item["width"], item["series"], item["radial"], item["diameter"])
+    return size
