@@ -20,7 +20,7 @@ def isReinforced(s):
     return bool(len(re.findall(" RF ?", s)))
 
 def isRunflat(s):
-    return bool(len(re.findall(" RUNFLAT|R-F|RFT|SSR|DSST|ROF|EMT|(RUN FLAT)|ZP", s)))
+    return bool(len(re.findall(" DSST|EMT|HRFS|MOExtended|PAX|RUNFLAT|R-F|RFT|ROF|SSR|(RUN FLAT)|TRF|ZRP|ZP|ZPS", s)))
 
 def isSelfSeal(s):
     return bool(len(re.findall(" SEAL|CS", s)))
@@ -29,7 +29,7 @@ def isStuddable(s):
     return bool(len(re.findall(" STUDDABLE|CHIODABILE", s)))
 
 def isStudded(s):
-    return bool(len(re.findall(" STUDDED|CHIODATO|NASTARENGAS", s)))
+    return bool(len(re.findall(" STUDDED|CHIODATO|NASTARENGAS|SPIKE", s)))
 
 
 def normalizeCommonValues(s):
