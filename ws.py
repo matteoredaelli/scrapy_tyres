@@ -22,3 +22,6 @@ def extract_info():
         item = {"description": utils.clean_text(description.upper())}
         result = tyre_utils.mergeItems(item, tyre_utils.extractAll(item))
     return json.dumps(result)
+
+if __name__ == "__main__":
+    app.run(host='0.0.0.0', port=5000, debug=True)
