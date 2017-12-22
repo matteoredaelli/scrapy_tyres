@@ -15,7 +15,7 @@
 #    You should have received a copy of the GNU General Public License
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-import tyre.utils
+import tyre.item
 
 import store_fs, store_es
 
@@ -59,8 +59,8 @@ with open(source, 'r') as f:
         for p in pipelines:
             function = "pipelines[\"%s\"].process_item(item, 0)" % p
             item = eval(function)
-        item_new = tyre.utils.extractAll(item)
-        item = tyre.utils.mergeItems(item, item_new)
+        item_new = tyre.item.extractAll(item)
+        item = tyre.item.mergeItems(item, item_new)
 
         ##if "ean" in item:
         ##  tyre.utils.updateMLTrainFile(item)
@@ -72,9 +72,9 @@ with open(source, 'r') as f:
             store_fs.saveItem(item)
         else:
             outpath = "%s/parked/%s" % (out_prefix, item["brand"])
-            filename = "%s/%s.json" % (outpath, item["description"])
+            filename = "%s/%s.json" % (outpath, item["description"].replace("/","-"))
             outpath = outpath.replace(" ","-")
-            filename = filename.replace(" ","-").replace("'","").replace("/","-")
+            filename = filename.replace(" ","-").replace("'","")
             os.makedirs(outpath, exist_ok=True)
             with open(filename, 'w+') as f:
                 json.dump(item, f)
