@@ -4,8 +4,6 @@ import tyre.item
 
 import config
 
-# by default we connect to localhost:9200
-
 
 class Store(object):
     TYRE_DB = config.STORE_TYREDB
