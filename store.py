@@ -1,12 +1,14 @@
 from datetime import datetime
 import logging
-import tyre.utils
+import tyre.item
+
+import config
 
 # by default we connect to localhost:9200
 
 
 class Store(object):
-
+    TYRE_DB = config.STORE_TYREDB
     def getTyreID(self, item):
         if item and isinstance(item, dict) and "ean" in item and item["ean"]:
             id = item["ean"]
@@ -20,11 +22,11 @@ class Store(object):
         return None
     
     def saveItem(self, item):
-        tyre = self.getTyre(item)
-        if tyre and len(tyre.keys()) == 0:
+        t = self.getTyre(item)
+        if t and len(t.keys()) == 0:
             logging.warning('Adding new item')
-        tyre = tyre.utils.mergeItemIntoTyre(item, tyre)
-        return self.saveTyre(tyre)
+        t = tyre.item.mergeItemIntoTyre(item, t)
+        return self.saveTyre(t)
             
     def saveTyre(self, tyre):
         id = self.getTyreID(tyre)

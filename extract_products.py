@@ -37,15 +37,14 @@ if len(sys.argv) < 3:
 
 # Grab the input and output
 source = sys.argv[1]
-es_host = sys.argv[2]
 
 out_prefix="data/tyres"
 
-es = store_es.ES(es_host)
+es = store_es.ES()
 store_fs = store_fs.FS()
 
 
-logging.basicConfig(filename='extract_products.log',level=logging.DEBUG)
+logging.basicConfig(filename='extract_products.log',level=logging.WARNING)
 
 # when using from command line --log=DEBUG
 # getattr(logging, loglevel.upper())
@@ -67,7 +66,6 @@ with open(source, 'r') as f:
             
         if "ean" in item:
             logging.warning("Parsing %s" % item["ean"])
-            
             es.saveItem(item)
             store_fs.saveItem(item)
         else:

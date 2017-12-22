@@ -2,14 +2,14 @@
 from elasticsearch import Elasticsearch
 import logging
 import store
+import config
 
 # by default we connect to localhost:9200
 
 
 class ES(store.Store):
-    TYRE_DB = "tyre-db"
 
-    def __init__(self, hostname):
+    def __init__(self, hostname=config.STORE_ES_SERVER):
         self.HOSTNAME=hostname
         self.es = Elasticsearch([self.HOSTNAME])
         self.es.indices.create(index=self.TYRE_DB, ignore=400)

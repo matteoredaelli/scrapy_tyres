@@ -1,0 +1,4 @@
+## CUSTOM
+
+STORE_TYREDB="tyre-db-dev"
+STORE_ES_SERVER="http://localhost:9200"

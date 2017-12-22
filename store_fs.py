@@ -3,12 +3,8 @@ import logging
 import store
 import os
 
-# by default we connect to localhost:9200
-
 
 class FS(store.Store):
-    TYRE_DB = "data/tyre-db"
-
     def __init__(self):
         import os
         os.makedirs(self.TYRE_DB, exist_ok=True)
