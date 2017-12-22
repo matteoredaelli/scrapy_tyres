@@ -31,8 +31,8 @@ for p in PIPELINES:
     newclass = "%s()" % p
     pipelines[p] = eval(newclass)
 
-if len(sys.argv) < 3:
-    print('Usage: ' + sys.argv[0] + ' <sourcefile.json> elasticsearch_hostname')
+if len(sys.argv) < 2:
+    print('Usage: ' + sys.argv[0] + ' <sourcefile.json>')
     sys.exit(1)
 
 # Grab the input and output
