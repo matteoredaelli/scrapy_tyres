@@ -21,7 +21,7 @@
 
 import scrapy
 import datetime, re
-import utils, tyre_utils
+import utils, tyre.utils
 
 class RengaskonttiFi(scrapy.Spider):
     name = "rengaskontti.fi"
@@ -29,7 +29,7 @@ class RengaskonttiFi(scrapy.Spider):
     def __init__(self, *args, **kwargs):
         super(RengaskonttiFi, self).__init__(*args, **kwargs)
         self.allowed_domains = ["rengaskontti.fi"]
-        self.brands = tyre_utils.load_brands()
+        self.brands = tyre.utils.load_brands()
         self.brands = [s.replace("-", "_").replace(" ", "_") for s in self.brands]
      
         self.start_urls = ['https://www.rengaskontti.fi/auton-renkaat/%s/' % x for x in self.brands] 

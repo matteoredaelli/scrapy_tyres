@@ -8,7 +8,7 @@
 import datetime
 import re
 import utils
-import tyre_utils
+import tyre.utils
 #import pandas as pd
 import csv
 
@@ -94,7 +94,7 @@ class CleanValuesPipeline(object):
 class NormalizeCommonValuesPipeline(object):
     def process_item(self, item, spider):
         for f in item:
-            item[f] = tyre_utils.normalizeCommonValues(item[f])
+            item[f] = tyre.utils.normalizeCommonValues(item[f])
         return item
     
 class NormalizeFieldsPipeline(object):
@@ -111,16 +111,16 @@ class NormalizeFieldsPipeline(object):
                         del item[f]
                     f = f_new
                     function = "normalize_%s" % f
-                    if hasattr(tyre_utils, function) and item[f] is not None:
-                        function = "tyre_utils.%s(item)" % function
+                    if hasattr(tyre.utils, function) and item[f] is not None:
+                        function = "tyre.utils.%s(item)" % function
                         item = eval(function)
         return item
 
 class ExtractDataFromDescriptionPipeline(object):
     def process_item(self, item, spider):
         if  "description" in item and item["description"] is not None:
-            item2 = tyre_utils.extractAll(item["description"])
-            item = tyre_utils.mergeItems(item2)
+            item2 = tyre.utils.extractAll(item["description"])
+            item = tyre.utils.mergeItems(item2)
         return item
 
 class PricesWriterPipeline(object):

@@ -1,6 +1,6 @@
 from datetime import datetime
 import logging
-import tyre_utils
+import tyre.utils
 
 # by default we connect to localhost:9200
 
@@ -23,7 +23,7 @@ class Store(object):
         tyre = self.getTyre(item)
         if tyre and len(tyre.keys()) == 0:
             logging.warning('Adding new item')
-        tyre = tyre_utils.mergeItemIntoTyre(item, tyre)
+        tyre = tyre.utils.mergeItemIntoTyre(item, tyre)
         return self.saveTyre(tyre)
             
     def saveTyre(self, tyre):

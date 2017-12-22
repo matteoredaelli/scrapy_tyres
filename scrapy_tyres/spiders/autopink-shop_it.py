@@ -21,7 +21,7 @@
 
 import scrapy
 import datetime, re
-import tyre_utils
+import tyre.utils
 import utils
 
 class AutoPinkShopIt(scrapy.Spider):
