@@ -23,7 +23,7 @@ class ES(store.Store):
     def getDoc(self, type, id):
         return self.es.get(index=self.TYRE_DB, doc_type=type, id=id)["_source"]
     
-    def saveTyreByID(self, tyre, id):
+    def saveTyreByID(self, id, tyre):
         self.saveDoc("tyre", id, tyre)
         
     def getTyreByID(self, id):

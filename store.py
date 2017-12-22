@@ -12,7 +12,7 @@ class Store(object):
         return self.getTyreByID(t["ean"])
         
     def saveTyre(self, t):
-        return self.saveTyreByID(t, t["ean"])
+        return self.saveTyreByID(t["ean"], t)
         
     def saveItem(self, item):
         t = self.getTyre(item)
@@ -22,7 +22,7 @@ class Store(object):
         t = tyre.item.mergeItemIntoTyre(item, t)
         return self.saveTyre(t)
 
-    def saveTyreByID(self, tyre, id):
+    def saveTyreByID(self, id, tyre):
         logging.error("saveTyreID to be implemented")
         
     def getTyreByID(self, id):
