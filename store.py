@@ -24,7 +24,7 @@ class Store(object):
         t = tyre.item.mergeItemIntoTyre(item, t)
         return self.saveTyre(t)
 
-    def saveTyreIByD(self, tyre, id):
+    def saveTyreByID(self, tyre, id):
         logging.error("saveTyreID to be implemented")
         
     def getTyreByID(self, id):
