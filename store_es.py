@@ -14,8 +14,7 @@ class ES(store.Store):
         self.es = Elasticsearch([self.HOSTNAME])
         self.es.indices.create(index=self.TYRE_DB, ignore=400)
         
-    def add_source(self, source):
-        index = "tyre-source-%s" % source
+    def create_index(self, index):
         self.es.indices.create(index=index, ignore=400)
     
     def saveTyreByID(self, id, tyre):

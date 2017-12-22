@@ -7,7 +7,7 @@ import tyre_utils
 
 class Store(object):
 
-    def getID(self, item):
+    def getTyreID(self, item):
         if item and isinstance(item, dict) and "ean" in item and item["ean"]:
             id = item["ean"]
             if not isinstance(id, dict):
@@ -27,7 +27,7 @@ class Store(object):
         return self.saveTyre(tyre)
             
     def saveTyre(self, tyre):
-        id = self.getID(tyre)
+        id = self.getTyreID(tyre)
         if id:
             self.saveTyreByID(id, tyre)
         else:
@@ -38,7 +38,7 @@ class Store(object):
     
     def getTyre(self, item):
         tyre = {}
-        id = self.getID(item)
+        id = self.getTyreID(item)
         if id:
             try:
                 tyre = self.getTyreByID(id=id)

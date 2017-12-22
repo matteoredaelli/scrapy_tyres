@@ -54,7 +54,7 @@ def normalizeCommonValues(s):
 def normalize_brand(item):
     if "brand" in item:
         s=item["brand"]
-        s.replace("-", " ")
+        s.replace("-", " ").replace("_", " ")
         item["brand"] = s
     return item
 
@@ -66,6 +66,11 @@ def normalize_load_index(item):
 def normalize_label_fuel(item):
     if "label_fuel" in item:
         item["label_fuel"].upper()
+    return item
+
+def normalize_label_noise(item):
+    if "label_noise" in item:
+        item["label_noise"].upper().replace("DB","").strip()
     return item
 
 def normalize_label_wet(item):
@@ -142,7 +147,9 @@ def extractBrand(s):
     result = {}   
     list = s.split(" ")
     if len(list) < 3:
-        result["error"] = "String too short, cannot extract a brand from description '%s'" % s
+        if not "logging" in result:
+            result["logging"] = []
+        result["logging"].append("cannot extract brand from description '%s'" % s)
     else:
         brand = list[0]
         if len(brand) < 3:
@@ -194,7 +201,7 @@ def extractIndexes(s):
     ## TODO: gestire 107/110
     ## re.findall("(\d+)/?(\d+)([RSTUVZ])", s)
     result = {}
-    m = re.findall("(\d+/?\d+)([RSTUVWZ])", s)
+    m = re.findall("\(?(\d+/?\d+)\)?([I-Z])", s)
     l = len(m)
     if l > 0:
         result['speed_index'] = m[l-1][1]
@@ -206,13 +213,14 @@ def extractIndexes(s):
         
     return result
 
-def extractSize(s):
+def extractSizeIndex(s):
     ## TODO: manginc C
     ##   Hankook RW06 175 R14C 99Q
     result = {}
     if s is not None:
-        match = re.findall("(\d+)?/(\d*) ?(ZR|R)(\d+)(C)?", s)
+        match = re.findall("(\d+\.?\d*)/?(\d+\.?\d*)? ?(ZR|R|-)(\d+)(C)? \(?(\d+/?\d+)\)?([I-Z])", s)
         if len(match) > 0:
+            ## size
             result["width"]    = match[0][0]
             result["series"]   = match[0][1]
             result["radial"]   = match[0][2]
@@ -220,6 +228,15 @@ def extractSize(s):
             if match[0][4].upper() == "C":
                 result["vehicle"] = "LT"
             result["root"] = build_root(result)
+            
+            ## speed index and load index
+            
+            result['speed_index'] = match[0][6]
+            load_index  = match[0][5]
+            load_index_list =  load_index.split("/")
+            result['load_index'] = load_index_list[0]
+            if len(load_index_list) == 2:
+                result['load_index2'] = load_index_list[1]
         else:
             if not "logging" in result:
                 result["logging"] = []
@@ -257,9 +274,12 @@ def extractExtraInfos(s):
 def extractAll(item):
     s = item["description"]
     result = extractProduct(s)
-    s = s.replace(result["brand"] + " " + result["product"], "").strip()
-    result.update(extractSize(s))
-    result.update(extractIndexes(s))
+    if "brand" in result:
+        s = s.replace(result["brand"],"")
+    if "product" in result:
+        s = s.replace(result["product"],"")
+    s = s.strip()
+    result.update(extractSizeIndex(s))
     result.update(extractExtraInfos(s))
     result.update(extractEan(s))
     result.update(extractOEMark(s))
@@ -325,9 +345,8 @@ def load_products(filename="data/products.csv"):
    return load_file(filename)
 
 
-
 def build_root(item):
-    size = None
+    root = None
     if "width" in item and "series" in item and "diameter" in item and "radial" in item:
-        size = "%s/%s %s%s" % (item["width"], item["series"], item["radial"], item["diameter"])
-    return size
+        root = "%s/%s %s%s" % (item["width"], item["series"], item["radial"], item["diameter"])
+    return root
