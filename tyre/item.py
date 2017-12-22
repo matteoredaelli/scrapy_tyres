@@ -208,7 +208,7 @@ def extractSize(s):
     result = {}
     if s is not None:
         match = re.search("(\d+\.?\d*)/?(\d+\.?\d*)? ?(ZR|R|-)(\d+)(C)?", s)
-        if len(match.groups()) > 0:
+        if match and len(match.groups()) > 0:
             ## size
             result["width"]    = match.groups('')[0]
             result["series"]   = match.groups('')[1]
@@ -252,6 +252,11 @@ def extractExtraInfos(s):
     return extra
 
 def extractAll(item):
+    result = {}
+    
+    if "description" not in item:
+        return result
+    
     s = item["description"]
     
     result = extractProduct(s)

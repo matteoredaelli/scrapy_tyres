@@ -22,11 +22,10 @@ def version():
 @app.route('/extractor')
 def extract_info():
     description = request.args.get('description', '')
-
     result = {}
     if description is not None:
         item = {"description": utils.clean_text(description.upper())}
-        result = tyre.item.mergeItems(item, tyre.utils.extractAll(item))
+        result = tyre.item.mergeItems(item, tyre.item.extractAll(item))
     return json.dumps(result)
 
 
