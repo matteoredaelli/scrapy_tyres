@@ -63,7 +63,7 @@ with open(source, 'r') as f:
         if "ean" in item:
             logging.warning("Parsing %s" % item["ean"])
             init.es.saveItem(item)
-            init.store_fs.saveItem(item)
+            #init.store_fs.saveItem(item)
         else:
             outpath = "%s/parked/%s" % (out_prefix, item["brand"])
             filename = "%s/%s.json" % (outpath, item["description"].replace("/","-"))

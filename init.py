@@ -16,13 +16,14 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 import tyre.item
+import utils
 
 import store_fs, store_es
 import json, os, re, sys
 import logging
 
 es = store_es.ES()
-store_fs = store_fs.FS()
+#store_fs = store_fs.FS()
 
 #logging.basicConfig(filename='extract_products.log',level=logging.WARNING)
 logging.basicConfig(level=logging.WARNING)
@@ -30,3 +31,5 @@ logging.basicConfig(level=logging.WARNING)
 # when using from command line --log=DEBUG
 # getattr(logging, loglevel.upper())
 
+source_fields_mapping = utils.load_csv_to_dict("data/source-fields-mapping.csv")
+source_fields_mapping = utils.load_csv_to_dict("data/source-fields-mapping.csv")

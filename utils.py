@@ -33,7 +33,11 @@ def list2dict(list, sep=":"):
             result[m[0].strip()] = m[1].strip()
     return result
     
-    
+def load_csv_to_set(filename):
+    with open(filename, "r") as fd:
+        lines = fd.read().splitlines()
+    return set(lines)
+
 def load_csv_to_dict(filename):
     with open(filename) as f:
         return dict(filter(None, csv.reader(f)))

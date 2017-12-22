@@ -4,6 +4,7 @@ from flask import request, render_template
 app = Flask(__name__)
 
 import tyre.utils
+import tyre.item
 import utils
 import json
 
@@ -25,7 +26,7 @@ def extract_info():
     result = {}
     if description is not None:
         item = {"description": utils.clean_text(description.upper())}
-        result = tyre.utils.mergeItems(item, tyre.utils.extractAll(item))
+        result = tyre.item.mergeItems(item, tyre.utils.extractAll(item))
     return json.dumps(result)
 
 

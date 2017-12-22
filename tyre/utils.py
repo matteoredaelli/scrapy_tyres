@@ -55,20 +55,16 @@ def updateMLTrainFile(item, filename="data/ml_product.train"):
             f.write(s + "\n")
         f.closed
 
-def load_file(filename):
-    with open(filename, "r") as fd:
-        lines = fd.read().splitlines()
-    return set(lines)
+
 
 def load_brands(filename="data/brands.csv"):
-   return load_file(filename)
+   return utils.load_csv_to_set(filename)
 
 def load_sizes(filename="data/sizes.csv"):
-   return load_file(filename)
+   return utils.load_csv_to_set(filename)
 
 def load_products(filename="data/products.csv"):
-   return load_file(filename)
-
+   return utils.load_csv_to_set(filename)
 
 def build_root(item):
     root = None

@@ -9,47 +9,25 @@ import config
 
 class Store(object):
     TYRE_DB = config.STORE_TYREDB
-    def getTyreID(self, item):
-        if item and isinstance(item, dict) and "ean" in item and item["ean"]:
-            id = item["ean"]
-            if not isinstance(id, dict):
-                ## if it is an item, we have directly the value
-                return id
-            ## otherwise we get the first value
-            id = list(id.values())
-            if len(id) > 0:
-                return id[0]
-        return None
     
+    def getTyre(self, t):
+        return self.getTyreByID(t["ean"])
+        
+    def saveTyre(self, t):
+        return self.saveTyreByID(t, t["ean"])
+        
     def saveItem(self, item):
         t = self.getTyre(item)
+        print(t)
         if t and len(t.keys()) == 0:
             logging.warning('Adding new item')
         t = tyre.item.mergeItemIntoTyre(item, t)
         return self.saveTyre(t)
-            
-    def saveTyre(self, tyre):
-        id = self.getTyreID(tyre)
-        if id:
-            self.saveTyreByID(id, tyre)
-        else:
-            logging.warning('Cannot save tyre: missing ean?')
-            
-    def saveTyreByID(self, id, tyre):
-        logging.warning("to be implemented")
-    
-    def getTyre(self, item):
-        tyre = {}
-        id = self.getTyreID(item)
-        if id:
-            try:
-                tyre = self.getTyreByID(id=id)
-            except:
-                logging.debug('tyre does not exist in database')
-        else:
-            logging.warning('Cannot get tyre: missing brand or ean or manufacturer_number')
-        return tyre
-          
+
+    def saveTyreIByD(self, tyre, id):
+        logging.error("saveTyreID to be implemented")
+        
     def getTyreByID(self, id):
-        logging.warning("to be implemented")
-        return None
+        logging.error("getTyreID to be implemented")
+
+

@@ -16,10 +16,16 @@ class ES(store.Store):
         
     def create_index(self, index):
         self.es.indices.create(index=index, ignore=400)
+
+    def saveDoc(self, type, id, doc):
+        self.es.index(index=self.TYRE_DB, doc_type=type, id=id, body=doc)
+
+    def getDoc(self, type, id):
+        return self.es.get(index=self.TYRE_DB, doc_type=type, id=id)["_source"]
     
-    def saveTyreByID(self, id, tyre):
-        self.es.index(index=self.TYRE_DB, doc_type="tyre", id=id, body=tyre)
+    def saveTyreByID(self, tyre, id):
+        self.saveDoc("tyre", id, tyre)
         
     def getTyreByID(self, id):
-        tyre = self.es.get(index=self.TYRE_DB, doc_type="tyre", id=id)["_source"]
-        return tyre
+        return self.getDoc("tyre", id)
+    
