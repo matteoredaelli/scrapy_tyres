@@ -23,6 +23,7 @@ import json, os, re, sys
 
 import logging
 import scrapy_tyres.pipelines
+import init
 
 PIPELINES = ['scrapy_tyres.pipelines.MappingFieldsPipeline', 'scrapy_tyres.pipelines.CleanValuesPipeline', 'scrapy_tyres.pipelines.NormalizeCommonValuesPipeline', 'scrapy_tyres.pipelines.UppercasePipeline', 'scrapy_tyres.pipelines.NormalizeFieldsPipeline']
 
@@ -40,11 +41,6 @@ source = sys.argv[1]
 
 out_prefix="data/tyres"
 
-es = store_es.ES()
-store_fs = store_fs.FS()
-
-
-logging.basicConfig(filename='extract_products.log',level=logging.WARNING)
 
 # when using from command line --log=DEBUG
 # getattr(logging, loglevel.upper())
@@ -66,8 +62,8 @@ with open(source, 'r') as f:
             
         if "ean" in item:
             logging.warning("Parsing %s" % item["ean"])
-            es.saveItem(item)
-            store_fs.saveItem(item)
+            init.es.saveItem(item)
+            init.store_fs.saveItem(item)
         else:
             outpath = "%s/parked/%s" % (out_prefix, item["brand"])
             filename = "%s/%s.json" % (outpath, item["description"].replace("/","-"))

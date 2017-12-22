@@ -44,12 +44,7 @@ class StoreFieldsPipeline(object):
 
 class MappingFieldsPipeline(object):
     def __init__(self):
-        ## uf8 keys are converted .. not good!
-        ## df = pd.read_csv("data/source-fields-mapping.csv")
-        ## self.fields = dict(df.values)
-        with open("data/source-fields-mapping.csv") as f:
-            self.fields = dict(filter(None, csv.reader(f)))
-
+        self.fields = utils.load_csv_to_dict("data/source-fields-mapping.csv")
 
     def process_item(self, item, spider):
         item_new = item

@@ -1,3 +1,4 @@
+import csv
 import re
 import pandas as pd
 
@@ -33,3 +34,6 @@ def list2dict(list, sep=":"):
     return result
     
     
+def load_csv_to_dict(filename):
+    with open(filename) as f:
+        return dict(filter(None, csv.reader(f)))
