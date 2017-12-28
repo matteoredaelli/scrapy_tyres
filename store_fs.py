@@ -10,7 +10,7 @@ class FS(store.Store):
         os.makedirs(self.TYRE_DB, exist_ok=True)
 
     def getFilenameFromID(self, id):
-        filename = self.TYRE_DB + "/" + id
+        filename = "data/" + self.TYRE_DB + "/" + id
         return filename
     
     def saveTyreByID(self, id, item):
