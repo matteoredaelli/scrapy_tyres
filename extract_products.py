@@ -15,7 +15,7 @@
 #    You should have received a copy of the GNU General Public License
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-import tyre.item
+from tyre import item as tyre_item
 
 import store_fs, store_es
 
@@ -54,8 +54,8 @@ with open(source, 'r') as f:
         for p in pipelines:
             function = "pipelines[\"%s\"].process_item(item, 0)" % p
             item = eval(function)
-        item_new = tyre.item.extractAll(item)
-        item = tyre.item.mergeItems(item, item_new)
+        item_new = tyre_item.extractAll(item)
+        item = tyre_item.mergeItems(item, item_new)
 
         ##if "ean" in item:
         ##  tyre.utils.updateMLTrainFile(item)
@@ -63,6 +63,8 @@ with open(source, 'r') as f:
         if "ean" in item:
             logging.warning("Parsing %s" % item["ean"])
             init.es.saveItem(item)
+            if "brand" in item:
+                init.es.saveBrandIfNew(item["brand"])
             #init.store_fs.saveItem(item)
         else:
             outpath = "%s/parked/%s" % (out_prefix, item["brand"])

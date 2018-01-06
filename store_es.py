@@ -13,7 +13,7 @@ class ES(store.Store):
         self.HOSTNAME=hostname
         self.es = Elasticsearch([self.HOSTNAME])
         self.es.indices.create(index=self.TYRE_DB, ignore=400)
-        
+
     def create_index(self, index):
         self.es.indices.create(index=index, ignore=400)
 
@@ -21,11 +21,13 @@ class ES(store.Store):
         self.es.index(index=self.TYRE_DB, doc_type=type, id=id, body=doc)
 
     def getDoc(self, type, id):
-        return self.es.get(index=self.TYRE_DB, doc_type=type, id=id)["_source"]
-    
-    def saveTyreByID(self, id, tyre):
-        self.saveDoc("tyre", id, tyre)
-        
-    def getTyreByID(self, id):
-        return self.getDoc("tyre", id)
-    
+        result = {}
+        try:
+            result = self.es.get(index=self.TYRE_DB, doc_type=type, id=id)
+        except:
+            result = {}
+
+        if result and "_source" in result:
+            result = result["_source"]
+
+        return result

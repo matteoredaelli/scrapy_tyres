@@ -48,15 +48,18 @@ def normalize_price(item):
     return item
 
 def normalize_product(item):
-    if "brand" in item and "product" in item:
-        brand = item["brand"].replace("-", " ")
-        item["product"] = item["product"].replace(brand, "").strip()
+    if "brand" not in item:
+        return item
+    item = normalize_brand(item)
+    
+    if "product" in item:
+        item["product"] = item["product"].replace(item["brand"], "").strip()
     return item
 
 def normalize_size(item):
     if "size" in item:
         s = item["size"]
-        s = s.replace("rinnovati", "").replace(",", "").strip()
+        s = s.replace("rinnovati", " ").replace(",", " ").strip()
         item["size"] = s
     return item
 
@@ -77,14 +80,14 @@ def normalize_seasonality(item):
 
 def normalize_vehicle(item):
     if "vehicle" in item:
-        s = item["vehicle"]
+        s = item["vehicle"].upper()
         if bool(len(re.findall("AUTO|PKW", s))):
             result = "CAR"
         elif s == "HA":
             result = "CAR"
         elif s == "PA":
             result = "VAN"
-        elif s == "4x4" or s == "4X4":
+        elif s == "4x4":
             result = "SUV"
         else:
             result = s
@@ -114,6 +117,8 @@ def mergeItems(item1, item2, append=False):
     return item1
 
 def mergeItemIntoTyre(item, tyre={} ):
+    if tyre is None:
+        tyre = {}
     if item is None:
         return tyre
     if "source" in item and item["source"]:
@@ -121,10 +126,13 @@ def mergeItemIntoTyre(item, tyre={} ):
     else:
         source = "Unknow"
     for f in item:
-        if item[f] is not None:
-            if not (f in tyre):
+        if item[f] is not None and not f.startswith("_"):
+            if f not in tyre:
                 tyre[f] = {}
-            tyre[f][source] = item[f]
+            if f == "ean":
+                tyre[f] = item[f]
+            else:
+                tyre[f][source] = item[f]
     return tyre
 
 ##

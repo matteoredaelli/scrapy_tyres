@@ -2,7 +2,7 @@ from,to
 larghezza,width
 altezza,series
 tipo,vehicle
-diametro,rim
+diametro,diameter
 indice di portanza,load_index
 indice di velocità,speed_index
 stagione,seasonality
