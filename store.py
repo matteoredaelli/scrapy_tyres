@@ -34,7 +34,7 @@ class Store(object):
 ## brands
     def saveBrand(self, id, brand = None):
         if brand is None:
-            brand = {"id": id, "name": id}
+            brand = {"name": id}
         self.saveDoc("brand", id, brand)
 
     def getBrand(self, id):
@@ -42,5 +42,6 @@ class Store(object):
 
     def saveBrandIfNew(self, id, brand = None):
         b = self.getBrand(id)
+        print(b)
         if b is None or b.keys() == []:
             self.saveBrand(id, brand)

@@ -29,12 +29,12 @@ scrapy list > data/sources.csv
 for spider in $(scrapy list) ; do
     filename=$outdir/$prefix-$spider.json
     echo scrapy crawl "${spider}" -t jsonlines -o $filename
-    echo python3 bin/extract_products.py $filename.json $elasticserver
+    echo python3 extract_products.py $filename $elasticserver
 done
 
 for r in $(cat data/sizes.csv) ; do
   w=$(echo $r |cut -f1 -d',')
   s=$(echo $r |cut -f2 -d',')
   d=$(echo $r |cut -f3 -d',')
-  scrapy crawl autopink-shop.it -t jsonlines -o data/sources/2017-12-20-autopink-shop.it.json -a width=$w -a series=$s -a diameter=$d -a details=1
+  echo scrapy crawl autopink-shop.it -t jsonlines -o data/sources/2017-12-20-autopink-shop.it.json -a width=$w -a series=$s -a diameter=$d -a details=1
 done

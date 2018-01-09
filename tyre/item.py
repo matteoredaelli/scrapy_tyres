@@ -216,13 +216,13 @@ def extractSize(s):
     result = {}
     if s is not None:
         match = re.search("(\d+\.?\d*)/?(\d+\.?\d*)? ?(ZR|R|-)(\d+)(C)?", s)
-        if match and len(match.groups()) > 0:
+        if match and len(match.groups()) >= 4:
             ## size
             result["width"]    = match.groups('')[0]
             result["series"]   = match.groups('')[1]
             result["radial"]   = match.groups('')[2]
             result["diameter"] = match.groups('')[3]
-            if match[0][4].upper() == "C":
+            if match[0] and len(match[0]) >= 5 and match[0][4].upper() == "C":
                 result["vehicle"] = "LT"
             result["size"] = match.group()
         else:

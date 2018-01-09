@@ -21,13 +21,13 @@ class ES(store.Store):
         self.es.index(index=self.TYRE_DB, doc_type=type, id=id, body=doc)
 
     def getDoc(self, type, id):
-        result = {}
+        result =None
         try:
             result = self.es.get(index=self.TYRE_DB, doc_type=type, id=id)
         except:
-            result = {}
+            return None
 
-        if result and "_source" in result:
+        if result and "found" in result and result["found"] and "_source" in result:
             result = result["_source"]
 
         return result
