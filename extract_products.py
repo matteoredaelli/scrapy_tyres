@@ -63,8 +63,9 @@ with open(source, 'r') as f:
         if "ean" in item:
             logging.warning("Parsing %s" % item["ean"])
             init.es.saveItem(item)
-            if "brand" in item:
-                init.es.saveBrandIfNew(item["brand"])
+            for field in ["source", "brand", "product"]:
+                if field in item:
+                    init.es.saveFieldIfNew(field, item[field])
             #init.store_fs.saveItem(item)
         else:
             outpath = "%s/parked/%s" % (out_prefix, item["brand"])

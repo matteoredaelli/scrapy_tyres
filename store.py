@@ -31,17 +31,16 @@ class Store(object):
     def getTyreByID(self, id):
         return self.getDoc("tyre", id)
 
-## brands
-    def saveBrand(self, id, brand = None):
-        if brand is None:
-            brand = {"name": id}
-        self.saveDoc("brand", id, brand)
+## field
+    def saveField(self, field, id, record = None):
+        if record is None:
+            record = {"name": id}
+        self.saveDoc("!" + field, id, record)
 
-    def getBrand(self, id):
-        return self.getDoc("brand", id)
+    def getField(self, field, id):
+        return self.getDoc("!" + field, id)
 
-    def saveBrandIfNew(self, id, brand = None):
-        b = self.getBrand(id)
-        print(b)
+    def saveFieldIfNew(self, field, id, record = None):
+        b = self.getField(field, id)
         if b is None or b.keys() == []:
-            self.saveBrand(id, brand)
+            self.saveField(field, id, record)
