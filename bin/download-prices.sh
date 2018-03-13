@@ -29,7 +29,6 @@ scrapy list > data/sources.csv
 for spider in $(scrapy list) ; do
     filename=$outdir/$prefix-$spider.json
     echo scrapy crawl "${spider}" -t jsonlines -o $filename
-    echo python3 extract_products.py $filename $elasticserver
 done
 
 for r in $(cat data/sizes.csv) ; do
