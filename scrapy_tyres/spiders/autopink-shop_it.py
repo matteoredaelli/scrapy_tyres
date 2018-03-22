@@ -34,25 +34,27 @@ class AutoPinkShopIt(scrapy.Spider):
         self.width = width
         self.series = series
         self.diameter = diameter
-        self.start_urls = ['https://www.autopink-shop.it/search?width=%s&profile=%s&size=%s&pageNoFull=1' % (width, series, diameter)]
+        self.start_urls = ['https://www.autopink-shop.it/search?vehicleTypes=PKW&vehicleTypes=RACE_PKW&vehicleTypes=LLKW&vehicleTypes=VINTAGE_PKW&vehicleTypes=OFF&priceCategory=recommended&season=&width=%s&profile=%s&size=%s&suchen=1' % (width, series, diameter)]
         
     def parse(self, response):
         for entry in response.xpath('//div[@class="row serp j-sr-item"]'):
-            id = entry.xpath('.//a/@name').extract_first()
-            brand = entry.xpath('.//div[@itemtype="http://schema.org/Product"]/b/text()').extract_first()
+
             product = entry.xpath('.//div[@itemtype="http://schema.org/Product"]/a[@itemprop="name"]/text()').extract_first()
             url = entry.xpath('.//div[@itemtype="http://schema.org/Product"]/a[@itemprop="name"]/@href').extract_first()
+            # id = entry.xpath('.//a/@name').extract_first()
+            id = url.split("/")[-1]
+            brand = entry.xpath('.//div[@itemtype="http://schema.org/Product"]/b/text()').extract_first()
             url = response.urljoin(url)
             description = entry.xpath('.//strong[@class="result-list-prod-size"]//text()').extract_first()
             season = entry.xpath('.//div[@class="col-xs-8 col-sm-8 col-md-3 serp_B result-list-prod-size-container"]/text()[4]').extract_first()
-            price1 = entry.xpath('.//span[@itemprop="price"]/text()').extract_first()
-            price2 = entry.xpath('.//span[@itemprop="price"]/sup/text()').extract_first()
+            price = entry.xpath('.//span[@itemprop="price"]/text()').extract_first()
+            #price2 = entry.xpath('.//span[@itemprop="price"]/sup/text()').extract_first()
             mydata =  {
                 "brand": brand,
                 "url": url,
                 "product": product,
                 "id": id,
-                "price": price1 + price2,
+                "price": price,
                 "seasonality": season,
                 "width": self.width,
                 "series": self.series,
