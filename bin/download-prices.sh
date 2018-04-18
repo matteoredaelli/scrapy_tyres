@@ -37,4 +37,6 @@ for r in $(cat data/sizes.csv) ; do
   d=$(echo $r |cut -f3 -d',')
   filename=$outdir/$prefix-autopink-shop.it.json
   echo scrapy crawl autopink-shop.it -t jsonlines -o $filename -a width=$w -a series=$s -a diameter=$d -a details=1
+  filename=$outdir/$prefix-gommadiretto.it.json
+  echo scrapy crawl gommadiretto.it -t jsonlines -o $filename -a width=$w -a series=$s -a diameter=$d -a details=1
 done

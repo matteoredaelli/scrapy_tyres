@@ -189,16 +189,16 @@ sizes = [
 # ["265","70","15"],
 #["265","70","16"]
     ]
-    
+
 class GommadirettoIt(scrapy.Spider):
     name = "gommadiretto.it"
-    
+
     def __init__(self, width="195", height="65", diameter="15", details=0, *args, **kwargs):
         super(GommadirettoIt, self).__init__(*args, **kwargs)
         self.allowed_domains = ["gommadiretto.it", "autopink-shop.it"]
         self.details = int(details)
-        self.start_urls = ['http://www.gommadiretto.it/cgi-bin/rshop.pl?s_p=&rsmFahrzeugart=PKW&s_p_=Tutti&dsco=130&tyre_for=&search_tool=&ist_hybris_orig=&with_bootstrap_flag=1&suchen=--Mostrare+tutti+gli+pneumatici--&m_s=3&x_tyre_for=&cart_id=88618236.130.22966&sowigan=&Breite=%s&Quer=%s&Felge=%s&Speed=&Load=&Marke=&kategorie=&filter_preis_von=&filter_preis_bis=&homologation=&Ang_pro_Seite=50' % (width, height, diameter) for [width, height, diameter] in sizes]
-        
+        self.start_urls = ['http://www.gommadiretto.it/cgi-bin/rshop.pl?s_p=&rsmFahrzeugart=PKW&s_p_=Tutti&dsco=130&tyre_for=&search_tool=&ist_hybris_orig=&with_bootstrap_flag=1&suchen=--Mostrare+tutti+gli+pneumatici--&m_s=3&x_tyre_for=&cart_id=88618236.130.22966&sowigan=&Breite=%s&Quer=%s&Felge=%s&Speed=&Load=&Marke=&kategorie=&filter_preis_von=&filter_preis_bis=&homologation=&Ang_pro_Seite=50' % (width, height, diameter)]
+
     def parse(self, response):
         for entry in response.xpath('//div[@class="artikelklotz ajax_artikelklotz ajax_suchergebnisliste_artikelklotz"]'):
             id = entry.xpath('.//a/@name').extract_first()
@@ -223,7 +223,7 @@ class GommadirettoIt(scrapy.Spider):
                 yield mydata
             else:
                 yield scrapy.Request(url, callback=self.parse_tyre_autopink, meta={'mydata': mydata})
-     
+
         next_page = response.xpath('//a[@id="ajax_suchergebnisliste_goto_next"]/@href').extract_first()
         if next_page is not None:
             yield scrapy.Request(response.urljoin(next_page), callback=self.parse)
@@ -238,7 +238,7 @@ class GommadirettoIt(scrapy.Spider):
             mydata['label_wet'] = labels[1]
             mydata['label_noise'] = labels[2]
         yield mydata
-        
+
     def parse_tyre(self, response):
         ean = response.xpath('//div[@id="pdp_tb_info_ean"]//div[@class="pdp_tabC"]/text()').extract_first()
         description2 = response.xpath('//div[@class="container mainback"]//h1/text()').extract_first()
@@ -255,4 +255,3 @@ class GommadirettoIt(scrapy.Spider):
             mydata['label_wet'] = labels[1]
             mydata['label_noise'] = labels[2]
         yield mydata
-            
