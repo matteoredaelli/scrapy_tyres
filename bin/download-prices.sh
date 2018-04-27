@@ -38,5 +38,17 @@ for r in $(cat data/sizes.csv) ; do
   filename=$outdir/$prefix-autopink-shop.it.json
   echo scrapy crawl autopink-shop.it -t jsonlines -o $filename -a width=$w -a series=$s -a diameter=$d -a details=1
   filename=$outdir/$prefix-gommadiretto.it.json
-  echo scrapy crawl gommadiretto.it -t jsonlines -o $filename -a width=$w -a series=$s -a diameter=$d -a details=1
+  echo scrapy crawl gommadiretto.it -t jsonlines -o $filename -a width=$w -a series=$s -a diameter=$d #-a details=1
+done
+
+for file in Artikelliste_Affnet_new ; do
+  echo "curl -o /tmp/${file}.csv http://media.reifen.com/fileadmin/files/RC-Artikellisten/${file}.txt"
+  ##echo "strings /tmp/${file}.csv > /tmp/${file}-new.csv"
+  echo python3 bin/csv2json.py /tmp/${file}.csv $outdir/$prefix-${file}.json reifen.com "';'"
+done
+
+for file in ArtikellisteMot_Affnet_new Artikelliste_Zanox_IT Artikelliste_HURRA_IT Artikelliste_HURRA_FR ; do
+  echo "curl -o /tmp/${file}.csv http://media.reifen.com/fileadmin/files/RC-Artikellisten/${file}.txt"
+  ##echo "strings /tmp/${file}.csv > /tmp/${file}-new.csv"
+  echo python3 bin/csv2json.py /tmp/${file}.csv $outdir/$prefix-${file}.json reifen.com "'\t'"
 done
