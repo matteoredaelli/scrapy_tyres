@@ -1,4 +1,7 @@
-import sys, csv
+## -*- coding: utf-8 -*-
+
+import sys
+import csv
 import numpy as np
 import os, datetime
 
@@ -14,7 +17,7 @@ sep = sys.argv[4] if len(sys.argv) == 5 else "\n"
 if sep == "\\t":
     sep = "\t"
 
-with open(filein, newline='') as csvfile:
+with open(filein, newline='', encoding='utf-8') as csvfile:
     spamreader = csv.DictReader(csvfile, delimiter=sep)
     with open(fileout, 'w') as f:
         for row in spamreader:
