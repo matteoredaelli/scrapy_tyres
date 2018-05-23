@@ -21,13 +21,13 @@ YEAR=$(date +%Y)
 MONTH=$(date +%m)
 DAY=$(date +%d)
 outdir="data/sources"
-prefix=$YEAR-$MONTH-$DAY
+today=$YEAR-$MONTH-$DAY
 mkdir -p $outdir
 
 scrapy list > data/sources.csv
 
 for spider in $(scrapy list) ; do
-    filename=$outdir/$prefix-$spider.json
+    filename=$outdir/$today-$spider.json
     echo scrapy crawl "${spider}" -t jsonlines -o $filename
 done
 
@@ -35,21 +35,21 @@ for r in $(cat data/sizes.csv) ; do
   w=$(echo $r |cut -f1 -d',')
   s=$(echo $r |cut -f2 -d',')
   d=$(echo $r |cut -f3 -d',')
-  filename=$outdir/$prefix-autopink-shop.it.json
+  filename=$outdir/$today-autopink-shop.it.json
   echo scrapy crawl autopink-shop.it -t jsonlines -o $filename -a width=$w -a series=$s -a diameter=$d -a details=1
-  filename=$outdir/$prefix-gommadiretto.it.json
-  echo scrapy crawl gommadiretto.it -t jsonlines -o $filename -a width=$w -a series=$s -a diameter=$d #-a details=1
+  #filename=$outdir/$today-gommadiretto.it.json
+  #echo scrapy crawl gommadiretto.it -t jsonlines -o $filename -a width=$w -a series=$s -a diameter=$d #-a details=1
 done
 
 for file in Artikelliste_Affnet_new ; do
   echo "curl -o /tmp/${file}.csv http://media.reifen.com/fileadmin/files/RC-Artikellisten/${file}.txt"
   echo "tr -cd '\11\12\15\40-\176' < /tmp/${file}.csv > /tmp/${file}-new.csv"
   ##echo "strings /tmp/${file}.csv > /tmp/${file}-new.csv"
-  echo python3 bin/csv2json.py /tmp/${file}-new.csv $outdir/$prefix-${file}.json reifen.com "';'"
+  echo python3 bin/csv2json.py /tmp/${file}-new.csv $outdir/$today-${file}.json reifen.com $today "';'"
 done
 
 for file in ArtikellisteMot_Affnet_new Artikelliste_Zanox_IT Artikelliste_HURRA_IT Artikelliste_HURRA_FR ; do
   echo "curl -o /tmp/${file}.csv http://media.reifen.com/fileadmin/files/RC-Artikellisten/${file}.txt"
   echo "tr -cd '\11\12\15\40-\176' < /tmp/${file}.csv > /tmp/${file}-new.csv"
-  echo python3 bin/csv2json.py /tmp/${file}-new.csv $outdir/$prefix-${file}.json reifen.com "'\t'"
+  echo python3 bin/csv2json.py /tmp/${file}-new.csv $outdir/$today-${file}.json reifen.com $today "'\t'"
 done

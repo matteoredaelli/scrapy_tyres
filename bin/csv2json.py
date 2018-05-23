@@ -4,7 +4,7 @@ import sys
 import csv
 import numpy as np
 import os, datetime
-
+import datetime
 
 import logging, json
 
@@ -12,7 +12,9 @@ import logging, json
 filein = sys.argv[1]
 fileout = sys.argv[2]
 source = sys.argv[3]
-sep = sys.argv[4] if len(sys.argv) == 5 else "\n"
+today = datetime.datetime.strptime(sys.argv[4], "%Y-%m-%d")
+
+sep = sys.argv[5] if len(sys.argv) == 6 else "\n"
 
 if sep == "\\t":
     sep = "\t"
@@ -23,5 +25,7 @@ with open(filein, newline='', encoding='utf-8') as csvfile:
         for row in spamreader:
             row = dict(row)
             row["source"] = source
+            row["crawled"] = today
+
             json.dump(row, f, ensure_ascii=False)
             f.write("\n")
