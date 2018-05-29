@@ -12,7 +12,8 @@ import logging, json
 filein = sys.argv[1]
 fileout = sys.argv[2]
 source = sys.argv[3]
-today = datetime.datetime.strptime(sys.argv[4], "%Y-%m-%d")
+#today = datetime.datetime.strptime(sys.argv[4], "%Y-%m-%d")
+today=sys.argv[4]
 
 sep = sys.argv[5] if len(sys.argv) == 6 else "\n"
 
