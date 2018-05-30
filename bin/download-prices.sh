@@ -43,13 +43,13 @@ done
 
 for file in Artikelliste_Affnet_new ; do
   echo "curl -o /tmp/${file}.csv http://media.reifen.com/fileadmin/files/RC-Artikellisten/${file}.txt"
-  echo "tr -cd '\11\12\15\40-\176' < /tmp/${file}.csv > /tmp/${file}-new.csv"
+  echo "tr -cd '\11\12\15\40-\176' < /tmp/${file}.csv | sed -e 's/\\\"//g'  > /tmp/${file}-new.csv"
   ##echo "strings /tmp/${file}.csv > /tmp/${file}-new.csv"
   echo python3 bin/csv2json.py /tmp/${file}-new.csv $outdir/$today-${file}.json reifen.com $today "';'"
 done
 
 for file in ArtikellisteMot_Affnet_new Artikelliste_Zanox_IT Artikelliste_HURRA_IT Artikelliste_HURRA_FR ; do
   echo "curl -o /tmp/${file}.csv http://media.reifen.com/fileadmin/files/RC-Artikellisten/${file}.txt"
-  echo "tr -cd '\11\12\15\40-\176' < /tmp/${file}.csv > /tmp/${file}-new.csv"
+  echo "tr -cd '\11\12\15\40-\176' < /tmp/${file}.csv | sed -e 's/\\\"//g' > /tmp/${file}-new.csv"
   echo python3 bin/csv2json.py /tmp/${file}-new.csv $outdir/$today-${file}.json reifen.com $today "'\t'"
 done
