@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 import scrapy
 import datetime, re
+import utils
 
 class EuromasterPneumaticiItSpider(scrapy.Spider):
     name = "euromaster-pneumatici.it"
@@ -8,7 +9,7 @@ class EuromasterPneumaticiItSpider(scrapy.Spider):
     start_urls = [
             'https://www.euromaster-pneumatici.it/pneumatico'
             ]
-    
+
     def parse(self, response):
         for url in response.xpath('//div[@class="marque"]/a/@href').extract():
             yield scrapy.Request(response.urljoin(url), callback=self.parse_brand)
@@ -20,13 +21,13 @@ class EuromasterPneumaticiItSpider(scrapy.Spider):
 
     def parse_tyres(self, response):
         for item in response.xpath('//div[@data-idproduct="1"]'):
-            
+
             brand = item.xpath('.//img[@class="produit-visu-manuf"]/@alt').extract_first()
             if not brand:
                 continue
             brand = brand.strip()
             product = item.xpath('.//div[@class="produit-desc"]/strong/text()').extract_first().strip()
-            
+
             season = item.xpath('.//div[@class="produit-desc"]/strong/img/@alt').extract_first().replace("Pneumatico ", "")
             match = re.match("^(.+) (.+)$", season)
             if not match:
@@ -44,7 +45,7 @@ class EuromasterPneumaticiItSpider(scrapy.Spider):
                 id=""
 
             price = item.xpath('.//div[@class="produit-prix "]/strong/text()').extract_first()
-            
+
             yield {
                     "brand": brand,
                     "description": utils.clean_text(description),

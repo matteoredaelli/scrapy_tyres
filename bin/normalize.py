@@ -32,6 +32,14 @@ source = sys.argv[1]
 # warehouse_location points to the default location for managed databases and tables
 warehouse_location = 'spark-warehouse'
 
+def stats(df):
+    print("Total records=%d" % df.count())
+    for f in df.columns:
+        print("Column %s" % f)
+        print(" distinct values: %d" % df.select(f).distinct().count())
+        df.groupBy(f).count().orderBy('count', ascending=False).show(20, False)
+
+
 def remove_extra_text(text):
     import re
     text = text \
@@ -56,17 +64,19 @@ def remove_extra_text(text):
 remove_extra_text_udf = udf(remove_extra_text, StringType())
 
 def normalize_common_pre(df):
-    return df\
+    return df.dropDuplicates() \
       .filter(df.id.isNotNull()) \
       .filter(df.id != '') \
       .filter(df.brand.isNotNull()) \
       .filter(df.brand != '') \
       .filter(df.size.isNotNull()) \
       .filter(df.size != '') \
+      ## columns lowercase
+      .toDF(*[c.lower() for c in df.columns] \
       .select(*(upper(col(c)).alias(c) for c in df.columns)) \
       .withColumn("brand",       regexp_replace("brand", "[-_]", " ")) \
       .withColumn("price",       regexp_replace("price", " €",   "")) \
-      .withColumn("price",       regexp_replace("price", ",",    ".")) 
+      .withColumn("price",       regexp_replace("price", ",",    "."))
 
 def normalize_common_post(df):
     return df
@@ -94,7 +104,7 @@ def normalize_gommadrettoit(df):
       .withColumn("country",     lit("IT")) \
       .withColumn("currency",    lit("EUR")) \
 
-      
+
 spark = SparkSession \
   .builder \
   .appName(sys.argv[0]) \
@@ -102,7 +112,6 @@ spark = SparkSession \
   .enableHiveSupport() \
   .getOrCreate()
 
-records = spark.read.json(source) 
+records = spark.read.json(source)
 records \
   .withColumn("product",    regexp_replace("product", "PNEUMATICO ", "")) \
-

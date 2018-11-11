@@ -9,7 +9,7 @@ class NorautoItSpider(scrapy.Spider):
 
     def parse(self, response):
         for item in response.xpath('//div[@class="ws-seg blc-all"]//div[@class="product-item-visible"]'):
-            brand = item.xpath('.//div[@class="brand-logo"]//img/@alt').extract_first() 
+            brand = item.xpath('.//div[@class="brand-logo"]//img/@alt').extract_first()
             product = item.xpath('.//div[@class="product-info"]//a/text()').extract_first().replace('Pneumatico', "").replace(brand,"")
             url = item.xpath('.//div[@class="product-info"]//a/@href').extract_first()
             size = item.xpath('.//div[@class="product-info"]//p/text()').extract_first()
@@ -25,6 +25,6 @@ class NorautoItSpider(scrapy.Spider):
                     "seasonality": season,
                     "url": url,
                     }
-        next_page = response.xpath('//a[@class="next"]/@href').extract_first()
+        next_page = response.xpath('//a[@class="next icon icon-navigation_back"]/@href').extract_first()
         if next_page:
             yield scrapy.Request(next_page, callback=self.parse)
