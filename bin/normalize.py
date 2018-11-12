@@ -19,8 +19,14 @@ from pyspark.sql import SparkSession
 from pyspark.sql import Row
 from pyspark.sql.functions import *
 from pyspark.sql.types import *
+import sys
 
-import re, sys
+reload(sys)
+sys.setdefaultencoding('utf8')
+
+import re, sys, csv
+
+RECORDS_TO_SHOW=30
 
 if len(sys.argv) != 2:
     print('Usage: ' + sys.argv[0] + ' <source>')
@@ -32,13 +38,35 @@ source = sys.argv[1]
 # warehouse_location points to the default location for managed databases and tables
 warehouse_location = 'spark-warehouse'
 
+spark = SparkSession \
+    .builder \
+    .appName(sys.argv[0]) \
+    .config("spark.sql.warehouse.dir", warehouse_location) \
+    .enableHiveSupport() \
+    .getOrCreate()
+spark.sparkContext.setLogLevel('WARN')
+
+def write_values(values, outpath, mode="overwrite"):
+    of = open(outpath, 'w')
+    for l in values:
+        of.write(str(l))
+        of.write("\n")
+    of.close()
+    ## df = spark.createDataFrame(zip(iter(values)), ["value"])
+    ## df.write.csv(outpath, mode="overwrite")
+
 def stats(df):
     print("Total records=%d" % df.count())
+    print(df.columns)
+    write_values(df.columns, "data/db/columns")
     for f in df.columns:
         print("Column %s" % f)
-        print(" distinct values: %d" % df.select(f).distinct().count())
-        df.groupBy(f).count().orderBy('count', ascending=False).show(20, False)
+        values = df.select(f).distinct().rdd.map(lambda row : row[0]).collect()
 
+        print(" distinct values: %d" % len(values))
+        outpath="data/db/" + f
+        write_values(values, outpath)
+        df.groupBy(f).count().orderBy('count', ascending=False).show(RECORDS_TO_SHOW, False)
 
 def remove_extra_text(text):
     import re
@@ -64,19 +92,17 @@ def remove_extra_text(text):
 remove_extra_text_udf = udf(remove_extra_text, StringType())
 
 def normalize_common_pre(df):
-    return df.dropDuplicates() \
-      .filter(df.id.isNotNull()) \
-      .filter(df.id != '') \
-      .filter(df.brand.isNotNull()) \
-      .filter(df.brand != '') \
-      .filter(df.size.isNotNull()) \
-      .filter(df.size != '') \
-      ## columns lowercase
-      .toDF(*[c.lower() for c in df.columns] \
-      .select(*(upper(col(c)).alias(c) for c in df.columns)) \
-      .withColumn("brand",       regexp_replace("brand", "[-_]", " ")) \
-      .withColumn("price",       regexp_replace("price", " €",   "")) \
-      .withColumn("price",       regexp_replace("price", ",",    "."))
+    df1 = df.dropDuplicates() \
+             .filter(df.id.isNotNull()) \
+             .filter(df.id != '') \
+             .toDF(*[c.lower().strip().replace(" ", "") for c in df.columns])
+    return df1.select(*(upper(col(c)).alias(c) for c in df1.columns))
+
+def normalize_common_ot(df): df \
+    .withColumn("crawled", crawled[0:10]) \
+    .withColumn("brand",       regexp_replace("brand", "[-_]", " ")) \
+    .withColumn("price",       regexp_replace("price", " €",   "")) \
+    .withColumn("price",       regexp_replace("price", ",",    "."))
 
 def normalize_common_post(df):
     return df
@@ -92,7 +118,7 @@ def normalize_autodocit(df):
       .withColumnRenamed("Pneumatici Runflat:",  "runflat") \
       .withColumnRenamed("Pneumatici chiodati:", "chiodabile")
 
-def normalize_gommadrettoit(df):
+def normalize_gommadirettoit(df):
     return df\
       .filter(regexp_extract('size', '(rinnovati)', 1) == '') \
       .withColumn("id",          trim(regexp_replace("id",       "MPN: ",""))) \
@@ -105,13 +131,9 @@ def normalize_gommadrettoit(df):
       .withColumn("currency",    lit("EUR")) \
 
 
-spark = SparkSession \
-  .builder \
-  .appName(sys.argv[0]) \
-  .config("spark.sql.warehouse.dir", warehouse_location) \
-  .enableHiveSupport() \
-  .getOrCreate()
+def main():
+    df = spark.read.json(source)
+    stats(normalize_common_pre(df))
 
-records = spark.read.json(source)
-records \
-  .withColumn("product",    regexp_replace("product", "PNEUMATICO ", "")) \
+if __name__== "__main__":
+  main()
