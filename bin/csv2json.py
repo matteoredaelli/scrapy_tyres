@@ -2,7 +2,6 @@
 
 import sys
 import csv
-import numpy as np
 import os, datetime
 import datetime
 
@@ -20,7 +19,8 @@ sep = sys.argv[5] if len(sys.argv) == 6 else "\n"
 if sep == "\\t":
     sep = "\t"
 
-with open(filein, newline='', encoding='utf-8') as csvfile:
+#with open(filein, newline='', encoding='utf-8') as csvfile:
+with open(filein, newline='', encoding='latin-1') as csvfile:
     spamreader = csv.DictReader(csvfile, delimiter=sep)
     with open(fileout, 'w') as f:
         for row in spamreader:
